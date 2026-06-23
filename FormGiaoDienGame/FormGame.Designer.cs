@@ -46,8 +46,8 @@
             lblSoPhong = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             prcbCoolDown = new ProgressBar();
-            tmCoolDown = new System.Windows.Forms.Timer(components);
             lblConnect = new Label();
+            tmCoolDown = new System.Windows.Forms.Timer(components);
             pnlButton.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -116,6 +116,7 @@
             pnlButton.Controls.Add(button4);
             pnlButton.Controls.Add(button2);
             pnlButton.Controls.Add(button1);
+            pnlButton.Controls.Add(lblConnect);
             pnlButton.Dock = DockStyle.Bottom;
             pnlButton.Location = new Point(0, 538);
             pnlButton.Name = "pnlButton";
@@ -124,7 +125,7 @@
             // 
             // txtIP
             // 
-            txtIP.Location = new Point(146, 47);
+            txtIP.Location = new Point(126, 41);
             txtIP.Name = "txtIP";
             txtIP.Size = new Size(100, 23);
             txtIP.TabIndex = 9;
@@ -140,7 +141,7 @@
             btnLan.Name = "btnLan";
             btnLan.Size = new Size(120, 35);
             btnLan.TabIndex = 8;
-            btnLan.Text = "Ket noi lan";
+            btnLan.Text = "Kết nối";
             btnLan.UseVisualStyleBackColor = false;
             btnLan.Click += btnLan_Click;
             // 
@@ -251,7 +252,6 @@
             tableLayoutPanel1.Controls.Add(lblPlayer1, 0, 1);
             tableLayoutPanel1.Controls.Add(lblStatus, 1, 2);
             tableLayoutPanel1.Controls.Add(prcbCoolDown, 1, 1);
-            tableLayoutPanel1.Controls.Add(lblConnect, 2, 0);
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -273,18 +273,18 @@
             prcbCoolDown.Style = ProgressBarStyle.Continuous;
             prcbCoolDown.TabIndex = 8;
             // 
-            // tmCoolDown
-            // 
-            tmCoolDown.Tick += tmCoolDown_Tick;
-            // 
             // lblConnect
             // 
             lblConnect.AutoSize = true;
-            lblConnect.Location = new Point(402, 0);
+            lblConnect.Location = new Point(488, 49);
             lblConnect.Name = "lblConnect";
             lblConnect.Size = new Size(72, 15);
             lblConnect.TabIndex = 9;
             lblConnect.Text = "test connect";
+            // 
+            // tmCoolDown
+            // 
+            tmCoolDown.Tick += tmCoolDown_Tick;
             // 
             // FormGame
             // 
