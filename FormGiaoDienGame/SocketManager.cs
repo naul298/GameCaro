@@ -51,38 +51,32 @@ namespace FormGiaoDienGame
         #endregion
 
         #region Common
-        public string IP = "127.0.0.1";
+        public string IP = "192.168.2.8";
         public int port = 12345;
-        public bool isServer()
-        {
-            return true;
-        }
+        public const int BUFFER = 1024;
+        public bool isServer = true;
+        
         public bool Send(object data)
         {
             byte[] sendData = SerializeData(data);
-            if (isServer())
-            {
-                return SendData(server, sendData);
-            }
-            else
-            {
-                return SendData(client, sendData);
-            }
+
+            return SendData(client, sendData);
         }
 
         public object Receive()
         {
-            byte[] receiveData = new byte[1024]; 
-            bool isOk = ReceiveData(client,receiveData);
+            byte[] receiveData = new byte[BUFFER];
+            bool isOk = ReceiveData(client, receiveData);
+
             return DeserializeData(receiveData);
         }
-        private bool SendData(Socket diemDen, byte[] data)
+        private bool SendData(Socket target, byte[] data)
         {
-            return diemDen.Send(data) == 1 ? true : false;
+            return target.Send(data) == 1 ? true : false;
         }
-        private bool ReceiveData(Socket diemDen, byte[] data)
+        private bool ReceiveData(Socket target, byte[] data)
         {
-            return diemDen.Receive(data) == 1 ? true : false;
+            return target.Receive(data) == 1 ? true : false;
         }
         public string GetLocalIPv4(NetworkInterfaceType _type)
         {

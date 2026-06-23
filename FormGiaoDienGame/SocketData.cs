@@ -29,6 +29,8 @@ namespace FormGiaoDienGame
         CHOI_LAI,
         CAU_HOA,       
         DAU_HANG,
+        END,
+        HET_GIO,
         THOAT_PHONG
     }
 }

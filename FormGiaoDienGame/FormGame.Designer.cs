@@ -30,11 +30,13 @@
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormGame));
-            pndlBanCo = new Panel();
+            pnlBanCo = new Panel();
             button1 = new Button();
             button2 = new Button();
             button4 = new Button();
             pnlButton = new Panel();
+            txtIP = new TextBox();
+            btnLan = new Button();
             lblThoat = new Button();
             lblStatus = new Label();
             lblPlayer2 = new Label();
@@ -44,25 +46,24 @@
             lblSoPhong = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             prcbCoolDown = new ProgressBar();
+            lblConnect = new Label();
             tmCoolDown = new System.Windows.Forms.Timer(components);
-            btnLan = new Button();
-            txtIP = new TextBox();
             pnlButton.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
-            // pndlBanCo
+            // pnlBanCo
             // 
-            pndlBanCo.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            pndlBanCo.AutoSize = true;
-            pndlBanCo.BackColor = Color.White;
-            pndlBanCo.BorderStyle = BorderStyle.FixedSingle;
-            pndlBanCo.Cursor = Cursors.Hand;
-            pndlBanCo.ForeColor = SystemColors.ControlText;
-            pndlBanCo.Location = new Point(0, 90);
-            pndlBanCo.Name = "pndlBanCo";
-            pndlBanCo.Size = new Size(572, 449);
-            pndlBanCo.TabIndex = 0;
+            pnlBanCo.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            pnlBanCo.AutoSize = true;
+            pnlBanCo.BackColor = Color.White;
+            pnlBanCo.BorderStyle = BorderStyle.FixedSingle;
+            pnlBanCo.Cursor = Cursors.Hand;
+            pnlBanCo.ForeColor = SystemColors.ControlText;
+            pnlBanCo.Location = new Point(0, 90);
+            pnlBanCo.Name = "pnlBanCo";
+            pnlBanCo.Size = new Size(572, 449);
+            pnlBanCo.TabIndex = 0;
             // 
             // button1
             // 
@@ -115,11 +116,34 @@
             pnlButton.Controls.Add(button4);
             pnlButton.Controls.Add(button2);
             pnlButton.Controls.Add(button1);
+            pnlButton.Controls.Add(lblConnect);
             pnlButton.Dock = DockStyle.Bottom;
             pnlButton.Location = new Point(0, 538);
             pnlButton.Name = "pnlButton";
             pnlButton.Size = new Size(572, 73);
             pnlButton.TabIndex = 1;
+            // 
+            // txtIP
+            // 
+            txtIP.Location = new Point(126, 41);
+            txtIP.Name = "txtIP";
+            txtIP.Size = new Size(100, 23);
+            txtIP.TabIndex = 9;
+            // 
+            // btnLan
+            // 
+            btnLan.BackColor = Color.FromArgb(232, 93, 93);
+            btnLan.Cursor = Cursors.Hand;
+            btnLan.FlatStyle = FlatStyle.Flat;
+            btnLan.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnLan.ForeColor = Color.White;
+            btnLan.Location = new Point(0, 35);
+            btnLan.Name = "btnLan";
+            btnLan.Size = new Size(120, 35);
+            btnLan.TabIndex = 8;
+            btnLan.Text = "Kết nối";
+            btnLan.UseVisualStyleBackColor = false;
+            btnLan.Click += btnLan_Click;
             // 
             // lblThoat
             // 
@@ -249,31 +273,18 @@
             prcbCoolDown.Style = ProgressBarStyle.Continuous;
             prcbCoolDown.TabIndex = 8;
             // 
+            // lblConnect
+            // 
+            lblConnect.AutoSize = true;
+            lblConnect.Location = new Point(488, 49);
+            lblConnect.Name = "lblConnect";
+            lblConnect.Size = new Size(72, 15);
+            lblConnect.TabIndex = 9;
+            lblConnect.Text = "test connect";
+            // 
             // tmCoolDown
             // 
             tmCoolDown.Tick += tmCoolDown_Tick;
-            // 
-            // btnLan
-            // 
-            btnLan.BackColor = Color.FromArgb(232, 93, 93);
-            btnLan.Cursor = Cursors.Hand;
-            btnLan.FlatStyle = FlatStyle.Flat;
-            btnLan.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            btnLan.ForeColor = Color.White;
-            btnLan.Location = new Point(0, 35);
-            btnLan.Name = "btnLan";
-            btnLan.Size = new Size(120, 35);
-            btnLan.TabIndex = 8;
-            btnLan.Text = "Ket noi lan";
-            btnLan.UseVisualStyleBackColor = false;
-            btnLan.Click += btnLan_Click;
-            // 
-            // txtIP
-            // 
-            txtIP.Location = new Point(146, 47);
-            txtIP.Name = "txtIP";
-            txtIP.Size = new Size(100, 23);
-            txtIP.TabIndex = 9;
             // 
             // FormGame
             // 
@@ -283,13 +294,14 @@
             ClientSize = new Size(572, 611);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(pnlButton);
-            Controls.Add(pndlBanCo);
+            Controls.Add(pnlBanCo);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "FormGame";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Caro Online";
+            FormClosing += FormGame_FormClosing;
             Shown += FormGame_Shown;
             pnlButton.ResumeLayout(false);
             pnlButton.PerformLayout();
@@ -301,7 +313,7 @@
 
         #endregion
 
-        private Panel pndlBanCo;
+        private Panel pnlBanCo;
         private Button button1;
         private Button button2;
         private Button button4;
@@ -318,5 +330,6 @@
         private System.Windows.Forms.Timer tmCoolDown;
         private TextBox txtIP;
         private Button btnLan;
+        private Label lblConnect;
     }
 }

@@ -1,71 +1,69 @@
-﻿using System.Net;
+﻿// ServerGame/Program.cs
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
-namespace ServerGame
+Console.OutputEncoding = Encoding.UTF8;
+Console.WriteLine("===== CoCaro Server =====");
+Console.WriteLine("Đang lắng nghe cổng 12345...\n");
+
+Socket sckServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+sckServer.Bind(new IPEndPoint(IPAddress.Any, 12345));
+sckServer.Listen(10);
+
+// Chờ đúng 2 client
+Console.WriteLine("Chờ Client 1 kết nối...");
+Socket client1 = sckServer.Accept();
+Console.WriteLine($"Client 1 đã kết nối: {client1.RemoteEndPoint}");
+
+Console.WriteLine("Chờ Client 2 kết nối...");
+Socket client2 = sckServer.Accept();
+Console.WriteLine($"Client 2 đã kết nối: {client2.RemoteEndPoint}\n");
+
+Console.WriteLine("Cả 2 client đã vào. Bắt đầu game!\n");
+
+// Thông báo cho mỗi client biết mình là player mấy
+// Dùng đúng format SocketData của FormGiaoDienGame
+SendJson(client1, new { Command = 99, Message = "PLAYER:0", Point = new { X = 0, Y = 0 } });
+SendJson(client2, new { Command = 99, Message = "PLAYER:1", Point = new { X = 0, Y = 0 } });
+
+// Relay 2 chiều: client1 <-> client2
+Thread t1 = new Thread(() => RelayLoop(client1, client2, "Client1"));
+Thread t2 = new Thread(() => RelayLoop(client2, client1, "Client2"));
+t1.IsBackground = true;
+t2.IsBackground = true;
+t1.Start();
+t2.Start();
+
+Console.WriteLine("Server đang chạy. Nhấn Enter để dừng...");
+Console.ReadLine();
+
+// ---- Hàm tiện ích ----
+static void RelayLoop(Socket source, Socket dest, string label)
 {
-    internal class Program
+    byte[] buffer = new byte[1024];
+    try
     {
-        static int SeverPort = 9999;
-
-        static void Main(string[] args)
+        while (true)
         {
-            if (args.Length >= 1)
-            {
-                SeverPort = int.Parse(args[0]);
-            }
+            int n = source.Receive(buffer);
+            if (n == 0) break;
 
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.WriteLine("===== Double chat TCP Server =====");
-            Console.WriteLine($"Server listening on port {SeverPort}...\n");
-            // Khởi tạo socket làm nhiệm vụ tiếp nhận kết nối
-            Socket sckServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            // Liên kết socket với cổng dịch vụ trên máy hiện tại
-            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, SeverPort);
-            sckServer.Bind(ipEndPoint);
-            // Đưa socket vào trạng thái lắng nghe
-            sckServer.Listen(10);
-            // Đợi người dùng thứ nhất tham gia
-            Console.WriteLine("Waiting for Client 1...");
-            Socket sckClient1 = sckServer.Accept();
-            Console.WriteLine("Client 1 connected!\n");
-            // Đợi người dùng thứ hai tham gia
-            Console.WriteLine("Waiting for Client 2...");
-            Socket sckClient2 = sckServer.Accept();
-            Console.WriteLine("Client 2 connected!\n");
-            Console.WriteLine("Both clients connected. Starting chat...\n");
-            Console.WriteLine("========================================\n");
-            // Vùng nhớ tạm để chứa dữ liệu trao đổi
-            byte[] data = new byte[1024];
-            int soByteNhan;
-            while (true)
-            {
-                // Nhận nội dung từ client thứ nhất
-                Console.Write("Client 1 → Server: ");
-                soByteNhan = sckClient1.Receive(data);
-                if (soByteNhan == 0)
-                    break;
-                string noiDungClient1 = Encoding.UTF8.GetString(data, 0, soByteNhan);
-                Console.WriteLine(noiDungClient1);
-                // Chuyển tiếp tin nhắn sang client thứ hai
-                sckClient2.Send(data, soByteNhan, SocketFlags.None);
-                Console.WriteLine($"Server → Client 2: {noiDungClient1}\n");
-                // Nhận nội dung từ client thứ hai
-                Console.Write("Client 2 → Server: ");
-                soByteNhan = sckClient2.Receive(data);
-                if (soByteNhan == 0)
-                    break;
-                string noiDungClient2 = Encoding.UTF8.GetString(data, 0, soByteNhan);
-                Console.WriteLine(noiDungClient2);
-                // Chuyển tiếp tin nhắn sang client thứ nhất
-                sckClient1.Send(data, soByteNhan, SocketFlags.None);
-                Console.WriteLine($"Server → Client 1: {noiDungClient2}\n");
-            }
-            sckClient1.Close();
-            sckClient2.Close();
-            sckServer.Close();
-            Console.WriteLine("Ket thuc thanh cong!");
-            Console.ReadLine();
+            string msg = Encoding.UTF8.GetString(buffer, 0, n);
+            Console.WriteLine($"[{label}] → {msg}");
+
+            dest.Send(buffer, n, SocketFlags.None);
         }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[{label}] mất kết nối: {ex.Message}");
+    }
+}
+
+static void SendJson(Socket s, object data)
+{
+    string json = JsonSerializer.Serialize(data);
+    s.Send(Encoding.UTF8.GetBytes(json));
 }
