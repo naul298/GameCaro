@@ -8,14 +8,14 @@ namespace FormGiaoDienGame
         #region Properties
         QlyBanCo BanCo;
 
-        SocketManager socket = new SocketManager();
+        SocketManager socket;
         #endregion
         #region Methods
         public void EndGame()
         {
             tmCoolDown.Stop();
-            pndlBanCo.Enabled = false;
-            MessageBox.Show("Kết thúc");
+            pnlBanCo.Enabled = false;
+            //MessageBox.Show("Kết thúc");
         }
 
         #endregion
@@ -23,7 +23,9 @@ namespace FormGiaoDienGame
         {
             InitializeComponent();
 
-            BanCo = new QlyBanCo(pndlBanCo, lblPlayer1, lblPlayer2, lblStatus);
+            Control.CheckForIllegalCrossThreadCalls = false;
+
+            BanCo = new QlyBanCo(pnlBanCo, lblPlayer1, lblPlayer2, lblStatus);
             BanCo.EndGame += BanCo_EndGame;
             BanCo.PlayerMark += BanCo_PlayerMark;
 
@@ -33,6 +35,8 @@ namespace FormGiaoDienGame
 
             tmCoolDown.Interval = Cons.coolDownInterval;
 
+            socket = new SocketManager();
+
             BanCo.VeBanCo();
 
             tmCoolDown.Start();
@@ -41,14 +45,16 @@ namespace FormGiaoDienGame
         private void BanCo_PlayerMark(object? sender, ButtonClickEvent e)
         {
             tmCoolDown.Start();
+            pnlBanCo.Enabled = false;
             prcbCoolDown.Value = 0;
-
-            socket.Send(new SocketData((int)SocketCommand.SEND_POINT,"", e.ClickPoint));
+            socket.Send(new SocketData((int)SocketCommand.SEND_POINT, "", e.ClickPoint));
+            Listen();
         }
 
         private void BanCo_EndGame(object? sender, EventArgs e)
         {
             EndGame();
+            socket.Send(new SocketData((int)SocketCommand.END, "", new Point()));
         }
 
         private void tmCoolDown_Tick(object sender, EventArgs e)
@@ -70,14 +76,18 @@ namespace FormGiaoDienGame
         {
             socket.IP = txtIP.Text;
 
-            if (!socket.KetNoiServer())
+            if (socket.KetNoiServer())
             {
-                socket.TaoServer();
-              
+                lblConnect.Text = "✔ Kết nối thành công!";
+                lblConnect.ForeColor = Color.Green;
+                pnlBanCo.Enabled = true;
+                Listen(); // bắt đầu lắng nghe từ server
             }
             else
             {
-                Listen();
+                lblConnect.Text = "✘ Không kết nối được!";
+                lblConnect.ForeColor = Color.Red;
+                pnlBanCo.Enabled = false;
             }
         }
         void Listen()
@@ -102,7 +112,13 @@ namespace FormGiaoDienGame
                     MessageBox.Show(data.Message);
                     break;
                 case (int)SocketCommand.SEND_POINT:
-                    BanCo.OtherPlayerMark(data.Point);
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        prcbCoolDown.Value = 0;
+                        pnlBanCo.Enabled = true;
+                        tmCoolDown.Start();
+                        BanCo.OtherPlayerMark(data.Point);
+                    }));
                     break;
                 case (int)SocketCommand.CAU_HOA:
 
@@ -113,11 +129,31 @@ namespace FormGiaoDienGame
                 case (int)SocketCommand.DAU_HANG:
 
                     break;
-                case (int)SocketCommand.THOAT_PHONG:
+                case (int)SocketCommand.END:
+                    MessageBox.Show("Win!");
+                    break;
+                case (int)SocketCommand.HET_GIO:
 
+                    break;
+                case (int)SocketCommand.THOAT_PHONG:
+                    tmCoolDown.Stop();
+                    MessageBox.Show("Người chơi đã thoát game","Thông báo");
                     break;
                 default:
                     break;
+            }
+            Listen();
+        }
+
+        private void FormGame_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(MessageBox.Show("Thoát khỏi trò chơi?","Thông báo",MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point()));
             }
         }
     }

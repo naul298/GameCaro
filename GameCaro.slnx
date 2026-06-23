@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="FormGiaoDienGame/FormGiaoDienGame.csproj" />
+  <Project Path="ServerGame/ServerGame.csproj" Id="59320fb7-cd64-4a0a-ae36-47e0b1d26f60" />
 </Solution>

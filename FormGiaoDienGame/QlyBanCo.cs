@@ -58,8 +58,8 @@ namespace FormGiaoDienGame
             this.listPlayers = new List<Player>()
             {
                 //Thêm 2 người chơi với tên và hình ảnh quân cờ tương ứng
-                new Player("Lê Hoàng Luân", Image.FromFile("E:\\Học Tập\\Năm 2\\Lập Trình Mạng\\CoCaro\\Imgs\\x.png")),
-                new Player("Lê Nhật Hoà", Image.FromFile("E:\\Học Tập\\Năm 2\\Lập Trình Mạng\\CoCaro\\Imgs\\o.png"))
+                new Player("Lê Hoàng Luân", Properties.Resources.x),
+                new Player("Lê Nhật Hoà", Properties.Resources.o)
             };
             this.player1.Text = listPlayers[0].Name;
             this.player2.Text = listPlayers[1].Name;
@@ -132,6 +132,8 @@ namespace FormGiaoDienGame
             Button btn = Matrix[point.Y][point.X]; //Ép kiểu sender về Button để lấy thông tin về ô bàn cờ được click
 
             if (btn.BackgroundImage != null) { return; }
+
+            //banCo.Enabled = true;
 
             btn.BackgroundImage = listPlayers[curPlayer].Chess; //Đặt hình ảnh quân cờ của người chơi hiện tại
 
