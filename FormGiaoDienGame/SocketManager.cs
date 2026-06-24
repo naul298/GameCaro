@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace FormGiaoDienGame
 {
-    internal class SocketManager
+    public class SocketManager
     {
         #region Client
         Socket client;

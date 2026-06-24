@@ -9,7 +9,7 @@ Console.OutputEncoding = Encoding.UTF8;
 Console.WriteLine("===== CoCaro Server =====");
 
 // ---- Chuỗi kết nối SQL Server ----
-string connStr = "Server=.;Database=GameCaro;Trusted_Connection=True;TrustServerCertificate=True;";
+string connStr = "Server=(localdb)\\MSSQLLocalDB;Database=dbCaro;Trusted_Connection=True;TrustServerCertificate=True;";
 
 Socket sckServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 sckServer.Bind(new IPEndPoint(IPAddress.Any, 12345));

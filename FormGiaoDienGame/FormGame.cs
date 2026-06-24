@@ -19,7 +19,7 @@ namespace FormGiaoDienGame
         }
 
         #endregion
-        public FormGame()
+        public FormGame(SocketManager socket, string displayName, int playerIndex)
         {
             InitializeComponent();
 
@@ -35,11 +35,16 @@ namespace FormGiaoDienGame
 
             tmCoolDown.Interval = Cons.coolDownInterval;
 
-            socket = new SocketManager();
+            this.socket = socket;
 
+            if (playerIndex == 0)
+                lblPlayer1.Text = displayName;
+            else
+                lblPlayer2.Text = displayName;
             BanCo.VeBanCo();
 
             tmCoolDown.Start();
+            Listen();
         }
 
         private void BanCo_PlayerMark(object? sender, ButtonClickEvent e)
@@ -99,7 +104,26 @@ namespace FormGiaoDienGame
                     SocketData data = (SocketData)socket.Receive();
                     ProcessData(data);
                 }
-                catch { }
+                catch (SocketException ex)
+                {
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        tmCoolDown.Stop();
+                        pnlBanCo.Enabled = false;
+                        MessageBox.Show("Mất kết nối với server.", "Thông báo");
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    // Bỏ qua nếu form đang đóng
+                    if (!this.IsDisposed)
+                    {
+                        this.Invoke((MethodInvoker)(() =>
+                        {
+                            MessageBox.Show($"Lỗi: {ex.Message}", "Thông báo");
+                        }));
+                    }
+                }
             });
             listenThread.IsBackground = true;
             listenThread.Start();
