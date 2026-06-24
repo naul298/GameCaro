@@ -7,115 +7,336 @@ using ServerGame.Models;
 
 namespace ServerGame.Core;
 
-// Server chính — lắng nghe, xác thực login, relay dữ liệu game
 public class GameServer
 {
-    // ---- Hằng số cấu hình ----
     private const int PORT = 12345;
     private const string CONN_STR =
         "Server=(localdb)\\MSSQLLocalDB;Database=dbCaro;" +
         "Trusted_Connection=True;TrustServerCertificate=True;";
 
-    // ---- Biến toàn cục của class ----
-    private readonly List<PlayerSession> _players = new(); // Danh sách 2 player đã login
+    // Danh sách tất cả client đang kết nối và tất cả phòng
+    private readonly List<PlayerSession> _clients = new();
+    private readonly List<LobbyRoom> _rooms = new();
+    private readonly object _lock = new(); // Lock cho thread-safe
 
-    // Kịch bản tổng: tạo socket → chờ 2 người login → relay dữ liệu
     public void Start()
     {
         Console.WriteLine("===== CoCaro Server =====");
+        LoadRoomsFromDb();
 
-        Socket sckServer = TaoServerSocket(PORT);
+        var sckServer = TaoServerSocket(PORT);
         Console.WriteLine($"Đang lắng nghe cổng {PORT}...\n");
 
-        AcceptPlayers(sckServer);   // Chờ đủ 2 người login
-
-        Console.WriteLine("\nCả 2 người chơi đã vào. Bắt đầu game!\n");
-
-        StartRelay();               // Bắt đầu chuyển tiếp dữ liệu
-
-        Console.WriteLine("Nhấn Enter để dừng server...");
-        Console.ReadLine();
-    }
-
-    // Tạo socket server, gán cổng và bắt đầu lắng nghe kết nối
-    private static Socket TaoServerSocket(int port)
-    {
-        var sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        sck.Bind(new IPEndPoint(IPAddress.Any, port)); // Lắng nghe trên tất cả card mạng
-        sck.Listen(10);                                // Tối đa 10 kết nối chờ trong hàng đợi
-        return sck;
-    }
-
-    // Vòng lặp chờ đủ 2 player login hợp lệ mới thoát
-    private void AcceptPlayers(Socket sckServer)
-    {
-        while (_players.Count < 2)
+        // Vòng lặp chính: mỗi client kết nối → tạo thread riêng
+        while (true)
         {
-            Socket client = sckServer.Accept(); // Chặn tại đây cho đến khi có người kết nối
-            Console.WriteLine($"Có kết nối mới: {client.RemoteEndPoint}");
-
-            // Xác thực login — trả về null nếu sai, tiếp tục chờ người khác
-            PlayerSession? session = XacThucLogin(client);
-            if (session == null) continue;
-
-            _players.Add(session);
-            Console.WriteLine($"[{_players.Count}/2] người chơi đã vào.");
+            Socket client = sckServer.Accept();
+            Console.WriteLine($"Kết nối mới: {client.RemoteEndPoint}");
+            var t = new Thread(() => HandleClient(client));
+            t.IsBackground = true;
+            t.Start();
         }
     }
 
-    // Xác thực login theo từng bước, trả về PlayerSession nếu hợp lệ
+    // Load phòng từ DB vào memory khi khởi động
+    private void LoadRoomsFromDb()
+    {
+        var rows = DatabaseHelper.LoadAllRooms(CONN_STR);
+        foreach (var (id, name, isDefault) in rows)
+            _rooms.Add(new LobbyRoom { Id = id, Name = name, IsDefault = isDefault });
+        Console.WriteLine($"Đã load {_rooms.Count} phòng từ DB.");
+    }
+
+    // Xử lý toàn bộ vòng đời 1 client
+    private void HandleClient(Socket socket)
+    {
+        // Bước 1: xác thực login
+        PlayerSession? session = XacThucLogin(socket);
+        if (session == null) return;
+
+        lock (_lock) _clients.Add(session);
+        Console.WriteLine($"[+] {session.DisplayName} vào lobby.");
+
+        // Bước 2: vòng lặp nhận lệnh từ client này
+        try
+        {
+            while (true)
+            {
+                SocketData? data = NhanGoi(socket);
+                if (data == null) break;
+                XuLyLenh(session, data);
+            }
+        }
+        catch { }
+        finally
+        {
+            OnClientDisconnect(session);
+        }
+    }
+
+    // Xử lý từng lệnh client gửi lên
+    private void XuLyLenh(PlayerSession session, SocketData data)
+    {
+        switch ((SocketCommand)data.Command)
+        {
+            case SocketCommand.GET_ROOMS:
+                GuiDanhSachPhong(session);
+                break;
+
+            case SocketCommand.CREATE_ROOM:
+                TaoPhong(session, data.Message);
+                break;
+
+            case SocketCommand.JOIN_ROOM:
+                VaoPhong(session, int.Parse(data.Message));
+                break;
+
+            case SocketCommand.LEAVE_ROOM:
+                RoiPhong(session);
+                break;
+
+            // Relay lệnh game sang đối thủ trong cùng phòng
+            case SocketCommand.SEND_POINT:
+            case SocketCommand.END:
+            case SocketCommand.HET_GIO:
+            case SocketCommand.THOAT_PHONG:
+            case SocketCommand.CAU_HOA:
+            case SocketCommand.CHOI_LAI:
+            case SocketCommand.DAU_HANG:
+                RelayToOpponent(session, data);
+                break;
+        }
+    }
+
+    // ── LOBBY HANDLERS ──────────────────────────────────────────
+
+    private void GuiDanhSachPhong(PlayerSession session)
+    {
+        lock (_lock)
+        {
+            // Serialize toàn bộ danh sách phòng thành JSON array
+            var list = _rooms.Select(r => new
+            {
+                r.Id,
+                r.Name,
+                r.Status,
+                r.HostName,
+                r.PlayerCount,
+                r.IsFull
+            });
+            string json = JsonSerializer.Serialize(list);
+            GuiJson(session.Socket, SocketCommand.ROOMS_LIST, json);
+        }
+    }
+
+    private void TaoPhong(PlayerSession session, string roomName)
+    {
+        lock (_lock)
+        {
+            // Tạo trong DB
+            int newId = DatabaseHelper.CreateRoom(CONN_STR, roomName, session.UserId);
+            if (newId < 0)
+            {
+                GuiJson(session.Socket, SocketCommand.JOIN_FAIL, "Không thể tạo phòng.");
+                return;
+            }
+
+            var room = new LobbyRoom { Id = newId, Name = roomName, IsDefault = false };
+            room.Players.Add(session);
+            session.CurrentRoomId = newId;
+            session.Index = 0;
+
+            _rooms.Add(room);
+            DatabaseHelper.UpdateRoom(CONN_STR, newId, session.UserId, 1, "Waiting");
+
+            // Báo người tạo: vào phòng thành công với index 0
+            GuiJson(session.Socket, SocketCommand.JOIN_OK,
+                $"{room.Name}|0|{session.DisplayName}|");
+
+            // Broadcast cập nhật lên tất cả lobby
+            BroadcastRoomUpdate(room);
+            Console.WriteLine($"[Phòng] '{roomName}' được tạo bởi {session.DisplayName}");
+        }
+    }
+
+    private void VaoPhong(PlayerSession session, int roomId)
+    {
+        lock (_lock)
+        {
+            var room = _rooms.FirstOrDefault(r => r.Id == roomId);
+            if (room == null)
+            {
+                GuiJson(session.Socket, SocketCommand.JOIN_FAIL, "Phòng không tồn tại.");
+                return;
+            }
+            if (room.IsFull)
+            {
+                GuiJson(session.Socket, SocketCommand.JOIN_FAIL, "Phòng đã đầy.");
+                return;
+            }
+
+            room.Players.Add(session);
+            session.CurrentRoomId = roomId;
+            session.Index = room.Players.Count - 1; // 0 hoặc 1
+
+            DatabaseHelper.UpdateRoom(CONN_STR, roomId,
+                room.HostId, room.PlayerCount,
+                room.IsFull ? "Playing" : "Waiting");
+
+            // Nếu đủ 2 người → thông báo cả 2 bắt đầu game
+            if (room.IsFull)
+            {
+                var p0 = room.Players[0];
+                var p1 = room.Players[1];
+                // JOIN_OK format: "roomName|playerIndex|myName|opponentName"
+                GuiJson(p0.Socket, SocketCommand.JOIN_OK,
+                    $"{room.Name}|0|{p0.DisplayName}|{p1.DisplayName}");
+                GuiJson(p1.Socket, SocketCommand.JOIN_OK,
+                    $"{room.Name}|1|{p1.DisplayName}|{p0.DisplayName}");
+                Console.WriteLine($"[Phòng] '{room.Name}' bắt đầu game!");
+            }
+            else
+            {
+                // Chỉ 1 người → vào chờ
+                GuiJson(session.Socket, SocketCommand.JOIN_OK,
+                    $"{room.Name}|0|{session.DisplayName}|");
+            }
+
+            BroadcastRoomUpdate(room);
+        }
+    }
+
+    private void RoiPhong(PlayerSession session)
+    {
+        lock (_lock) { XuLyRoiPhong(session); }
+    }
+
+    private void XuLyRoiPhong(PlayerSession session)
+    {
+        if (session.CurrentRoomId < 0) return;
+
+        var room = _rooms.FirstOrDefault(r => r.Id == session.CurrentRoomId);
+        if (room == null) return;
+
+        room.RemovePlayer(session);
+        session.CurrentRoomId = -1;
+
+        if (room.IsEmpty && !room.IsDefault)
+        {
+            // Xóa phòng tự tạo khi trống
+            _rooms.Remove(room);
+            DatabaseHelper.DeleteRoom(CONN_STR, room.Id);
+            BroadcastToLobby(SocketCommand.ROOM_DELETED, room.Id.ToString());
+            Console.WriteLine($"[Phòng] '{room.Name}' đã bị xóa (trống).");
+        }
+        else
+        {
+            // Còn người hoặc phòng mặc định → cập nhật
+            int newHostId = room.Players.Count > 0 ? room.Players[0].UserId : 0;
+            DatabaseHelper.UpdateRoom(CONN_STR, room.Id,
+                newHostId, room.PlayerCount, "Waiting");
+
+            // Nếu còn người trong phòng, thông báo người đó thành host mới
+            if (room.Players.Count > 0)
+            {
+                room.Players[0].Index = 0;
+                GuiJson(room.Players[0].Socket, SocketCommand.THOAT_PHONG,
+                    "Đối thủ đã rời phòng. Bạn là host mới.");
+            }
+
+            BroadcastRoomUpdate(room);
+        }
+    }
+
+    // ── DISCONNECT ───────────────────────────────────────────────
+
+    private void OnClientDisconnect(PlayerSession session)
+    {
+        lock (_lock)
+        {
+            Console.WriteLine($"[-] {session.DisplayName} ngắt kết nối.");
+            XuLyRoiPhong(session);
+            _clients.Remove(session);
+        }
+        try { session.Socket.Close(); } catch { }
+    }
+
+    // ── RELAY ────────────────────────────────────────────────────
+
+    private void RelayToOpponent(PlayerSession session, SocketData data)
+    {
+        lock (_lock)
+        {
+            var room = _rooms.FirstOrDefault(r => r.Id == session.CurrentRoomId);
+            if (room == null) return;
+            var opponent = room.Players.FirstOrDefault(p => p != session);
+            if (opponent == null) return;
+
+            string json = JsonSerializer.Serialize(data);
+            try { opponent.Socket.Send(Encoding.UTF8.GetBytes(json)); }
+            catch { }
+        }
+    }
+
+    // ── BROADCAST ────────────────────────────────────────────────
+
+    // Gửi cập nhật 1 phòng cho tất cả client đang ở lobby
+    private void BroadcastRoomUpdate(LobbyRoom room)
+    {
+        string payload = room.ToJson();
+        foreach (var client in _clients.Where(c => c.CurrentRoomId < 0))
+            try { GuiJson(client.Socket, SocketCommand.ROOM_UPDATE, payload); }
+            catch { }
+    }
+
+    // Broadcast lệnh đơn giản (ví dụ: ROOM_DELETED)
+    private void BroadcastToLobby(SocketCommand cmd, string message)
+    {
+        foreach (var client in _clients.Where(c => c.CurrentRoomId < 0))
+            try { GuiJson(client.Socket, cmd, message); }
+            catch { }
+    }
+
+    // ── HELPERS ──────────────────────────────────────────────────
+
     private PlayerSession? XacThucLogin(Socket client)
     {
-        SocketData? data = NhanGoiDau(client);
-
-        // Bước 1: kiểm tra gói có đúng là gói LOGIN không
+        SocketData? data = NhanGoi(client);
         if (data == null || data.Command != (int)SocketCommand.LOGIN)
         {
             GuiJson(client, SocketCommand.LOGIN_FAIL, "Dữ liệu không hợp lệ");
-            client.Close();
-            return null;
+            client.Close(); return null;
         }
 
-        // Bước 2: kiểm tra định dạng "username|password"
         var parts = data.Message.Split('|');
         if (parts.Length != 2)
         {
             GuiJson(client, SocketCommand.LOGIN_FAIL, "Sai định dạng");
-            client.Close();
-            return null;
+            client.Close(); return null;
         }
 
-        // Bước 3: kiểm tra tài khoản trong DB
-        string username = parts[0];
-        string password = parts[1];
+        string username = parts[0], password = parts[1];
         string? displayName = DatabaseHelper.KiemTraLogin(CONN_STR, username, password);
-
         if (displayName == null)
         {
             GuiJson(client, SocketCommand.LOGIN_FAIL, "Sai tài khoản hoặc mật khẩu");
-            client.Close();
-            Console.WriteLine($"Login thất bại: {username}");
-            return null;
+            client.Close(); return null;
         }
 
-        // Bước 4: login OK — gửi về tên + chỉ số player (0 hoặc 1)
-        int playerIndex = _players.Count;
-        GuiJson(client, SocketCommand.LOGIN_OK, $"{displayName}|{playerIndex}");
-        Console.WriteLine($"Login OK: {displayName} (Player {playerIndex})");
-
-        return new PlayerSession(client, displayName, playerIndex);
+        int userId = DatabaseHelper.GetUserId(CONN_STR, username);
+        GuiJson(client, SocketCommand.LOGIN_OK, displayName);
+        return new PlayerSession(client, displayName, -1, userId);
     }
 
-    // Nhận đúng 1 gói JSON đầu tiên từ client, chuyển thành SocketData
-    private static SocketData? NhanGoiDau(Socket client)
+    private static SocketData? NhanGoi(Socket client)
     {
-        byte[] buffer = new byte[1024];
-        int n = client.Receive(buffer);
-        string json = Encoding.UTF8.GetString(buffer, 0, n).Trim('\0');
+        byte[] buf = new byte[4096];
+        int n = client.Receive(buf);
+        if (n == 0) return null;
+        string json = Encoding.UTF8.GetString(buf, 0, n).Trim('\0');
         return JsonSerializer.Deserialize<SocketData>(json);
     }
 
-    // Gửi gói JSON với command và message, Point mặc định (0,0)
     private static void GuiJson(Socket s, SocketCommand cmd, string message = "")
     {
         string json = JsonSerializer.Serialize(
@@ -123,10 +344,11 @@ public class GameServer
         s.Send(Encoding.UTF8.GetBytes(json));
     }
 
-    // Tạo RelayService và bắt đầu chuyển tiếp dữ liệu 2 chiều
-    private void StartRelay()
+    private static Socket TaoServerSocket(int port)
     {
-        var relay = new RelayService(_players[0], _players[1]);
-        relay.Start();
+        var sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        sck.Bind(new IPEndPoint(IPAddress.Any, port));
+        sck.Listen(100);
+        return sck;
     }
 }

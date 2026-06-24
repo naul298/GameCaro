@@ -2,18 +2,20 @@
 
 namespace ServerGame.Models;
 
-// Thông tin 1 phiên chơi: gom socket + tên + chỉ số vào 1 object cho gọn
 public class PlayerSession
 {
-    public Socket Socket { get; }       // Kết nối TCP của player
-    public string DisplayName { get; }  // Tên hiển thị lấy từ DB
-    public int Index { get; }           // 0 hoặc 1
-    public string Label => $"Player{Index}({DisplayName})"; // Dùng để in log: "Player0(Luân)"
+    public Socket Socket { get; }
+    public string DisplayName { get; }
+    public int Index { get; set; }  // 0 hoặc 1 (trong phòng)
+    public int UserId { get; set; }
+    public int CurrentRoomId { get; set; } = -1;  // -1 = ở lobby
+    public string Label => $"Player{Index}({DisplayName})";
 
-    public PlayerSession(Socket socket, string displayName, int index)
+    public PlayerSession(Socket socket, string displayName, int index, int userId = 0)
     {
         Socket = socket;
         DisplayName = displayName;
         Index = index;
+        UserId = userId;
     }
 }

@@ -8,7 +8,7 @@ namespace FormGiaoDienGame
         private SocketManager _socket;
         private int _playerIndex;
 
-        public FormGame(SocketManager socket, string displayName, int playerIndex)
+        public FormGame(SocketManager socket, string displayName, int playerIndex, string opponentName = "Đối thủ")
         {
             InitializeComponent();
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -16,8 +16,8 @@ namespace FormGiaoDienGame
             _socket = socket;
             _playerIndex = playerIndex;
 
-            string nameX = (playerIndex == 0) ? displayName : "Đối thủ";
-            string nameO = (playerIndex == 1) ? displayName : "Đối thủ";
+            string nameX = (playerIndex == 0) ? displayName : opponentName;
+            string nameO = (playerIndex == 1) ? displayName : opponentName;
 
             _banCo = new QlyBanCo(pnlBanCo, lblPlayer1, lblPlayer2, lblStatus, nameX, nameO);
             _banCo.EndGame += BanCo_EndGame;

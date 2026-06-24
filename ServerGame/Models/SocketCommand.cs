@@ -3,15 +3,29 @@
 // Danh sách lệnh giao tiếp giữa client và server
 public enum SocketCommand
 {
-    SEND_POINT = 0,  // Gửi nước đi
-    THONG_BAO = 1,  // Thông báo chung
-    CHOI_LAI = 2,  // Yêu cầu chơi lại
-    CAU_HOA = 3,  // Yêu cầu cầu hoà
-    DAU_HANG = 4,  // Đầu hàng
-    END = 5,  // Kết thúc game (có người thắng)
-    HET_GIO = 6,  // Hết giờ
-    THOAT_PHONG = 7,  // Thoát phòng
-    LOGIN = 8,  // Gửi thông tin đăng nhập
-    LOGIN_OK = 9,  // Đăng nhập thành công
-    LOGIN_FAIL = 10, // Đăng nhập thất bại
+    // --- Game ---
+    SEND_POINT = 0,
+    THONG_BAO = 1,
+    CHOI_LAI = 2,
+    CAU_HOA = 3,
+    DAU_HANG = 4,
+    END = 5,
+    HET_GIO = 6,
+    THOAT_PHONG = 7,
+
+    // --- Auth ---
+    LOGIN = 8,
+    LOGIN_OK = 9,
+    LOGIN_FAIL = 10,
+
+    // --- Lobby ---
+    GET_ROOMS = 11,  // Client xin danh sách phòng
+    ROOMS_LIST = 12,  // Server trả danh sách phòng (JSON)
+    CREATE_ROOM = 13,  // Client tạo phòng mới
+    JOIN_ROOM = 14,  // Client vào phòng
+    LEAVE_ROOM = 15,  // Client rời phòng
+    ROOM_UPDATE = 16,  // Server broadcast cập nhật 1 phòng
+    JOIN_OK = 17,  // Vào phòng thành công, bắt đầu game
+    JOIN_FAIL = 18,  // Phòng đầy hoặc không tồn tại
+    ROOM_DELETED = 19,  // Phòng đã bị xóa
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 
@@ -131,15 +132,12 @@ namespace FormGiaoDienGame
 
                     if (response.Command == (int)SocketCommand.LOGIN_OK)
                     {
-                        var parts = response.Message.Split('|');
-                        string displayName = parts[0];
-                        int playerIndex = int.Parse(parts[1]);
+                        string displayName = response.Message; // Server chỉ gửi displayName
 
-                        lblStatus.ForeColor = Color.Green;
-                        lblStatus.Text = $"✔ Xin chào {displayName}! Đang vào phòng...";
+                        SetStatus(Color.Green, $"✔ Xin chào {displayName}!");
 
-                        FormGame formGame = new FormGame(socket, displayName, playerIndex);
-                        formGame.Show();
+                        var formLobby = new FormLobby(_socket, displayName);
+                        formLobby.Show();
                         this.Hide();
                     }
                     else
