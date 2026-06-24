@@ -32,15 +32,15 @@
             panel1 = new Panel();
             label1 = new Label();
             panel2 = new Panel();
-            button3 = new Button();
-            comboBox1 = new ComboBox();
+            btnKetNoi = new Button();
+            cboServer = new ComboBox();
             label4 = new Label();
             label3 = new Label();
             label2 = new Label();
-            textBox2 = new TextBox();
-            textBox1 = new TextBox();
+            txtMatKhau = new TextBox();
+            txtTenDangNhap = new TextBox();
             btnDangNhap = new Button();
-            button2 = new Button();
+            btnDangKi = new Button();
             panel3 = new Panel();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -69,37 +69,37 @@
             // 
             // panel2
             // 
-            panel2.Controls.Add(button3);
-            panel2.Controls.Add(comboBox1);
+            panel2.Controls.Add(btnKetNoi);
+            panel2.Controls.Add(cboServer);
             panel2.Controls.Add(label4);
             panel2.Controls.Add(label3);
             panel2.Controls.Add(label2);
-            panel2.Controls.Add(textBox2);
-            panel2.Controls.Add(textBox1);
+            panel2.Controls.Add(txtMatKhau);
+            panel2.Controls.Add(txtTenDangNhap);
             panel2.Location = new Point(0, 67);
             panel2.Name = "panel2";
             panel2.Size = new Size(334, 245);
             panel2.TabIndex = 1;
             // 
-            // button3
+            // btnKetNoi
             // 
-            button3.FlatStyle = FlatStyle.Popup;
-            button3.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button3.Location = new Point(231, 190);
-            button3.Name = "button3";
-            button3.Size = new Size(83, 48);
-            button3.TabIndex = 7;
-            button3.Text = "Kết nối";
-            button3.UseVisualStyleBackColor = true;
+            btnKetNoi.FlatStyle = FlatStyle.Popup;
+            btnKetNoi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnKetNoi.Location = new Point(231, 190);
+            btnKetNoi.Name = "btnKetNoi";
+            btnKetNoi.Size = new Size(83, 48);
+            btnKetNoi.TabIndex = 7;
+            btnKetNoi.Text = "Kết nối";
+            btnKetNoi.UseVisualStyleBackColor = true;
             // 
-            // comboBox1
+            // cboServer
             // 
-            comboBox1.Font = new Font("Segoe UI", 12F);
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(20, 201);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(186, 29);
-            comboBox1.TabIndex = 6;
+            cboServer.Font = new Font("Segoe UI", 12F);
+            cboServer.FormattingEnabled = true;
+            cboServer.Location = new Point(20, 201);
+            cboServer.Name = "cboServer";
+            cboServer.Size = new Size(186, 29);
+            cboServer.TabIndex = 6;
             // 
             // label4
             // 
@@ -131,21 +131,21 @@
             label2.TabIndex = 1;
             label2.Text = "Tên đăng nhập:";
             // 
-            // textBox2
+            // txtMatKhau
             // 
-            textBox2.Font = new Font("Segoe UI", 12F);
-            textBox2.Location = new Point(20, 120);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(294, 29);
-            textBox2.TabIndex = 1;
+            txtMatKhau.Font = new Font("Segoe UI", 12F);
+            txtMatKhau.Location = new Point(20, 120);
+            txtMatKhau.Name = "txtMatKhau";
+            txtMatKhau.Size = new Size(294, 29);
+            txtMatKhau.TabIndex = 1;
             // 
-            // textBox1
+            // txtTenDangNhap
             // 
-            textBox1.Font = new Font("Segoe UI", 12F);
-            textBox1.Location = new Point(20, 39);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(294, 29);
-            textBox1.TabIndex = 0;
+            txtTenDangNhap.Font = new Font("Segoe UI", 12F);
+            txtTenDangNhap.Location = new Point(20, 39);
+            txtTenDangNhap.Name = "txtTenDangNhap";
+            txtTenDangNhap.Size = new Size(294, 29);
+            txtTenDangNhap.TabIndex = 0;
             // 
             // btnDangNhap
             // 
@@ -159,20 +159,20 @@
             btnDangNhap.Text = "Đăng nhập";
             btnDangNhap.UseVisualStyleBackColor = false;
             // 
-            // button2
+            // btnDangKi
             // 
-            button2.FlatStyle = FlatStyle.Popup;
-            button2.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button2.Location = new Point(184, 20);
-            button2.Name = "button2";
-            button2.Size = new Size(130, 43);
-            button2.TabIndex = 5;
-            button2.Text = "Đăng kí";
-            button2.UseVisualStyleBackColor = true;
+            btnDangKi.FlatStyle = FlatStyle.Popup;
+            btnDangKi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnDangKi.Location = new Point(184, 20);
+            btnDangKi.Name = "btnDangKi";
+            btnDangKi.Size = new Size(130, 43);
+            btnDangKi.TabIndex = 5;
+            btnDangKi.Text = "Đăng kí";
+            btnDangKi.UseVisualStyleBackColor = true;
             // 
             // panel3
             // 
-            panel3.Controls.Add(button2);
+            panel3.Controls.Add(btnDangKi);
             panel3.Controls.Add(btnDangNhap);
             panel3.Dock = DockStyle.Bottom;
             panel3.Location = new Point(0, 312);
@@ -207,15 +207,15 @@
         private Panel panel1;
         private Label label1;
         private Panel panel2;
-        private ComboBox comboBox1;
-        private Button button2;
+        private ComboBox cboServer;
+        private Button btnDangKi;
         private Button btnDangNhap;
         private Label label4;
         private Label label3;
         private Label label2;
-        private TextBox textBox2;
-        private TextBox textBox1;
-        private Button button3;
+        private TextBox txtMatKhau;
+        private TextBox txtTenDangNhap;
+        private Button btnKetNoi;
         private Panel panel3;
     }
 }
