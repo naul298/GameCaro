@@ -4,7 +4,43 @@ namespace ServerGame.Data;
 
 public static class DatabaseHelper
 {
-    // Login (giữ nguyên)
+    
+    public static (bool ok, string message) CreateUser(string connStr, string username, string password, string displayName)
+    {
+        // Thêm vào class DatabaseHelper
+        /// <summary>
+        /// Tạo tài khoản mới. Trả về true nếu thành công, false nếu username đã tồn tại.
+        /// </summary>
+        try
+        {
+            using var conn = new SqlConnection(connStr);
+            conn.Open();
+
+            // Kiểm tra username đã tồn tại chưa
+            using var checkCmd = new SqlCommand(
+                "SELECT COUNT(1) FROM Users WHERE username = @u", conn);
+            checkCmd.Parameters.AddWithValue("@u", username);
+            int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+            if (count > 0)
+                return (false, "Tên đăng nhập đã tồn tại.");
+
+            // Insert user mới
+            using var insertCmd = new SqlCommand(
+                "INSERT INTO Users (username, password, display_name) " +
+                "VALUES (@u, @p, @d)", conn);
+            insertCmd.Parameters.AddWithValue("@u", username);
+            insertCmd.Parameters.AddWithValue("@p", password);
+            insertCmd.Parameters.AddWithValue("@d", displayName);
+            insertCmd.ExecuteNonQuery();
+
+            return (true, "Đăng ký thành công.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Lỗi DB CreateUser: " + ex.Message);
+            return (false, "Lỗi server.");
+        }
+    }
     public static string? KiemTraLogin(string connStr, string username, string password)
     {
         try

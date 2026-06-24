@@ -39,5 +39,8 @@ namespace FormGiaoDienGame
         JOIN_OK = 17,
         JOIN_FAIL = 18,
         ROOM_DELETED = 19,
+        REGISTER = 20,       // Client gửi yêu cầu đăng ký
+        REGISTER_OK = 21,    // Server báo thành công
+        REGISTER_FAIL = 22,  // Server báo thất bại (trùng username, v.v.)
     }
 }
