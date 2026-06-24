@@ -42,6 +42,7 @@
             btnTaoPhong = new Button();
             btnVaoPhong = new Button();
             txtSearch = new TextBox();
+            btnLamMoi = new Button();
             panel1.SuspendLayout();
             panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvRooms).BeginInit();
@@ -78,6 +79,7 @@
             // 
             // panel4
             // 
+            panel4.Controls.Add(btnLamMoi);
             panel4.Controls.Add(btnSearch);
             panel4.Controls.Add(dgvRooms);
             panel4.Controls.Add(lblUserName);
@@ -93,14 +95,14 @@
             // btnSearch
             // 
             btnSearch.BackColor = SystemColors.Control;
-            btnSearch.BackgroundImage = Properties.Resources.kinhlup;
             btnSearch.BackgroundImageLayout = ImageLayout.Zoom;
             btnSearch.FlatStyle = FlatStyle.Popup;
             btnSearch.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnSearch.Location = new Point(321, 34);
             btnSearch.Name = "btnSearch";
-            btnSearch.Size = new Size(42, 29);
+            btnSearch.Size = new Size(88, 29);
             btnSearch.TabIndex = 8;
+            btnSearch.Text = "Tìm kiếm";
             btnSearch.UseVisualStyleBackColor = false;
             // 
             // dgvRooms
@@ -183,6 +185,19 @@
             txtSearch.Size = new Size(271, 29);
             txtSearch.TabIndex = 0;
             // 
+            // btnLamMoi
+            // 
+            btnLamMoi.BackColor = SystemColors.Control;
+            btnLamMoi.BackgroundImageLayout = ImageLayout.Zoom;
+            btnLamMoi.FlatStyle = FlatStyle.Popup;
+            btnLamMoi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnLamMoi.Location = new Point(424, 34);
+            btnLamMoi.Name = "btnLamMoi";
+            btnLamMoi.Size = new Size(88, 29);
+            btnLamMoi.TabIndex = 9;
+            btnLamMoi.Text = "Làm mới";
+            btnLamMoi.UseVisualStyleBackColor = false;
+            // 
             // FormLobby
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -215,5 +230,6 @@
         private Label label1;
         private DataGridView dgvRooms;
         private Button btnSearch;
+        private Button btnLamMoi;
     }
 }
