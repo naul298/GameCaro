@@ -10,9 +10,7 @@ namespace ServerGame.Core;
 public class GameServer
 {
     private const int PORT = 12345;
-    private const string CONN_STR =
-        "Server=(localdb)\\MSSQLLocalDB;Database=dbCaro;" +
-        "Trusted_Connection=True;TrustServerCertificate=True;";
+    private const string CONN_STR ="Server=(localdb)\\MSSQLLocalDB;Database=dbCaro;" +"Trusted_Connection=True;TrustServerCertificate=True;";
 
     // Danh sách tất cả client đang kết nối và tất cả phòng
     private readonly List<PlayerSession> _clients = new();
@@ -37,7 +35,31 @@ public class GameServer
             t.Start();
         }
     }
+    private void XuLyDangKy(Socket socket, SocketData data)
+    {
+        // Format: "username|password|displayName"
+        var parts = data.Message.Split('|');
+        if (parts.Length != 3)
+        {
+            GuiJson(socket, SocketCommand.REGISTER_FAIL, "Dữ liệu không hợp lệ.");
+            return;
+        }
 
+        string username = parts[0].Trim();
+        string password = parts[1].Trim();
+        string displayName = parts[2].Trim();
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)
+            || string.IsNullOrEmpty(displayName))
+        {
+            GuiJson(socket, SocketCommand.REGISTER_FAIL, "Vui lòng điền đầy đủ thông tin.");
+            return;
+        }
+
+        var (ok, message) = DatabaseHelper.CreateUser(CONN_STR, username, password, displayName);
+        GuiJson(socket, ok ? SocketCommand.REGISTER_OK : SocketCommand.REGISTER_FAIL, message);
+        Console.WriteLine($"[Register] {username} → {message}");
+    }
     // Load phòng từ DB vào memory khi khởi động
     private void LoadRoomsFromDb()
     {
@@ -50,14 +72,33 @@ public class GameServer
     // Xử lý toàn bộ vòng đời 1 client
     private void HandleClient(Socket socket)
     {
-        // Bước 1: xác thực login
-        PlayerSession? session = XacThucLogin(socket);
+        // Đọc gói đầu tiên — có thể là LOGIN hoặc REGISTER
+        SocketData? firstPacket = NhanGoi(socket);
+        if (firstPacket == null) { socket.Close(); return; }
+
+        // Nếu là REGISTER → xử lý rồi đóng kết nối (client sẽ reconnect để login)
+        if (firstPacket.Command == (int)SocketCommand.REGISTER)
+        {
+            XuLyDangKy(socket, firstPacket);
+            socket.Close();
+            return;
+        }
+
+        // Nếu không phải LOGIN → từ chối
+        if (firstPacket.Command != (int)SocketCommand.LOGIN)
+        {
+            GuiJson(socket, SocketCommand.LOGIN_FAIL, "Dữ liệu không hợp lệ.");
+            socket.Close();
+            return;
+        }
+
+        // Xác thực login như cũ
+        PlayerSession? session = XacThucLogin(socket, firstPacket);
         if (session == null) return;
 
         lock (_lock) _clients.Add(session);
         Console.WriteLine($"[+] {session.DisplayName} vào lobby.");
 
-        // Bước 2: vòng lặp nhận lệnh từ client này
         try
         {
             while (true)
@@ -68,10 +109,7 @@ public class GameServer
             }
         }
         catch { }
-        finally
-        {
-            OnClientDisconnect(session);
-        }
+        finally { OnClientDisconnect(session); }
     }
 
     // Xử lý từng lệnh client gửi lên
@@ -299,19 +337,12 @@ public class GameServer
 
     // ── HELPERS ──────────────────────────────────────────────────
 
-    private PlayerSession? XacThucLogin(Socket client)
+    private PlayerSession? XacThucLogin(Socket client, SocketData data)
     {
-        SocketData? data = NhanGoi(client);
-        if (data == null || data.Command != (int)SocketCommand.LOGIN)
-        {
-            GuiJson(client, SocketCommand.LOGIN_FAIL, "Dữ liệu không hợp lệ");
-            client.Close(); return null;
-        }
-
         var parts = data.Message.Split('|');
         if (parts.Length != 2)
         {
-            GuiJson(client, SocketCommand.LOGIN_FAIL, "Sai định dạng");
+            GuiJson(client, SocketCommand.LOGIN_FAIL, "Sai định dạng.");
             client.Close(); return null;
         }
 
@@ -319,7 +350,7 @@ public class GameServer
         string? displayName = DatabaseHelper.KiemTraLogin(CONN_STR, username, password);
         if (displayName == null)
         {
-            GuiJson(client, SocketCommand.LOGIN_FAIL, "Sai tài khoản hoặc mật khẩu");
+            GuiJson(client, SocketCommand.LOGIN_FAIL, "Sai tài khoản hoặc mật khẩu.");
             client.Close(); return null;
         }
 

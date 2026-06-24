@@ -1,6 +1,6 @@
 ﻿namespace FormGiaoDienGame
 {
-    partial class FormLogin
+    partial class FormRegister
     {
         /// <summary>
         /// Required designer variable.
@@ -28,18 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
             panel1 = new Panel();
             label1 = new Label();
             panel2 = new Panel();
-            btnKetNoi = new Button();
-            txtServer = new ComboBox();
-            label4 = new Label();
-            label3 = new Label();
-            label2 = new Label();
+            lblServer = new Label();
+            textBox1 = new TextBox();
+            txtName = new Label();
+            txtMauKhau = new Label();
+            txtTenTaiKhoan = new Label();
             txtMatKhau = new TextBox();
             txtTenDangNhap = new TextBox();
-            btnDangNhap = new Button();
             btnDangKi = new Button();
             panel3 = new Panel();
             lblStatus = new Label();
@@ -66,122 +64,106 @@
             label1.Name = "label1";
             label1.Size = new Size(310, 45);
             label1.TabIndex = 0;
-            label1.Text = "Đăng nhập";
+            label1.Text = "Đăng kí";
             label1.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panel2
             // 
-            panel2.Controls.Add(btnKetNoi);
-            panel2.Controls.Add(txtServer);
-            panel2.Controls.Add(label4);
-            panel2.Controls.Add(label3);
-            panel2.Controls.Add(label2);
+            panel2.Controls.Add(lblServer);
+            panel2.Controls.Add(textBox1);
+            panel2.Controls.Add(txtName);
+            panel2.Controls.Add(txtMauKhau);
+            panel2.Controls.Add(txtTenTaiKhoan);
             panel2.Controls.Add(txtMatKhau);
             panel2.Controls.Add(txtTenDangNhap);
             panel2.Location = new Point(0, 67);
             panel2.Name = "panel2";
-            panel2.Size = new Size(334, 245);
+            panel2.Size = new Size(334, 271);
             panel2.TabIndex = 0;
             // 
-            // btnKetNoi
+            // lblServer
             // 
-            btnKetNoi.BackColor = SystemColors.Control;
-            btnKetNoi.BackgroundImageLayout = ImageLayout.Zoom;
-            btnKetNoi.FlatStyle = FlatStyle.Popup;
-            btnKetNoi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnKetNoi.Location = new Point(218, 201);
-            btnKetNoi.Name = "btnKetNoi";
-            btnKetNoi.Size = new Size(96, 29);
-            btnKetNoi.TabIndex = 4;
-            btnKetNoi.Text = "Truy cập";
-            btnKetNoi.UseVisualStyleBackColor = false;
-            btnKetNoi.Click += btnKetNoi_Click;
+            lblServer.Dock = DockStyle.Bottom;
+            lblServer.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            lblServer.ForeColor = SystemColors.ControlDark;
+            lblServer.Location = new Point(0, 256);
+            lblServer.Name = "lblServer";
+            lblServer.Size = new Size(334, 15);
+            lblServer.TabIndex = 0;
+            lblServer.Text = "label2";
+            lblServer.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // txtServer
+            // textBox1
             // 
-            txtServer.Font = new Font("Segoe UI", 12F);
-            txtServer.FormattingEnabled = true;
-            txtServer.Location = new Point(20, 201);
-            txtServer.Name = "txtServer";
-            txtServer.Size = new Size(186, 29);
-            txtServer.TabIndex = 3;
+            textBox1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            textBox1.Location = new Point(24, 33);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(294, 29);
+            textBox1.TabIndex = 1;
             // 
-            // label4
+            // txtName
             // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic);
-            label4.Location = new Point(12, 177);
-            label4.Name = "label4";
-            label4.Size = new Size(98, 21);
-            label4.TabIndex = 0;
-            label4.Text = "Chọn server:";
+            txtName.AutoSize = true;
+            txtName.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            txtName.Location = new Point(16, 9);
+            txtName.Name = "txtName";
+            txtName.Size = new Size(80, 21);
+            txtName.TabIndex = 0;
+            txtName.Text = "Họ và tên";
             // 
-            // label3
+            // txtMauKhau
             // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic);
-            label3.Location = new Point(12, 96);
-            label3.Name = "label3";
-            label3.Size = new Size(82, 21);
-            label3.TabIndex = 0;
-            label3.Text = "Mật khẩu:";
+            txtMauKhau.AutoSize = true;
+            txtMauKhau.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic);
+            txtMauKhau.Location = new Point(16, 171);
+            txtMauKhau.Name = "txtMauKhau";
+            txtMauKhau.Size = new Size(82, 21);
+            txtMauKhau.TabIndex = 0;
+            txtMauKhau.Text = "Mật khẩu:";
             // 
-            // label2
+            // txtTenTaiKhoan
             // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic);
-            label2.Location = new Point(12, 15);
-            label2.Name = "label2";
-            label2.Size = new Size(120, 21);
-            label2.TabIndex = 0;
-            label2.Text = "Tên đăng nhập:";
+            txtTenTaiKhoan.AutoSize = true;
+            txtTenTaiKhoan.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic);
+            txtTenTaiKhoan.Location = new Point(16, 83);
+            txtTenTaiKhoan.Name = "txtTenTaiKhoan";
+            txtTenTaiKhoan.Size = new Size(120, 21);
+            txtTenTaiKhoan.TabIndex = 0;
+            txtTenTaiKhoan.Text = "Tên đăng nhập:";
             // 
             // txtMatKhau
             // 
             txtMatKhau.Font = new Font("Segoe UI", 12F);
-            txtMatKhau.Location = new Point(20, 120);
+            txtMatKhau.Location = new Point(24, 195);
             txtMatKhau.Name = "txtMatKhau";
             txtMatKhau.Size = new Size(294, 29);
-            txtMatKhau.TabIndex = 2;
-            txtMatKhau.UseSystemPasswordChar = true;
+            txtMatKhau.TabIndex = 3;
             // 
             // txtTenDangNhap
             // 
             txtTenDangNhap.Font = new Font("Segoe UI", 12F);
-            txtTenDangNhap.Location = new Point(20, 39);
+            txtTenDangNhap.Location = new Point(24, 107);
             txtTenDangNhap.Name = "txtTenDangNhap";
             txtTenDangNhap.Size = new Size(294, 29);
-            txtTenDangNhap.TabIndex = 1;
-            // 
-            // btnDangNhap
-            // 
-            btnDangNhap.BackColor = SystemColors.InactiveCaption;
-            btnDangNhap.FlatStyle = FlatStyle.Popup;
-            btnDangNhap.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            btnDangNhap.Location = new Point(20, 6);
-            btnDangNhap.Name = "btnDangNhap";
-            btnDangNhap.Size = new Size(130, 40);
-            btnDangNhap.TabIndex = 0;
-            btnDangNhap.Text = "Đăng nhập";
-            btnDangNhap.UseVisualStyleBackColor = false;
+            txtTenDangNhap.TabIndex = 2;
             // 
             // btnDangKi
             // 
+            btnDangKi.BackColor = SystemColors.ActiveCaption;
             btnDangKi.FlatStyle = FlatStyle.Popup;
             btnDangKi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            btnDangKi.Location = new Point(184, 6);
+            btnDangKi.Location = new Point(102, 26);
             btnDangKi.Name = "btnDangKi";
             btnDangKi.Size = new Size(130, 40);
             btnDangKi.TabIndex = 1;
             btnDangKi.Text = "Đăng kí";
-            btnDangKi.UseVisualStyleBackColor = true;
-            btnDangKi.Click += btnDangKi_Click_1;
+            btnDangKi.UseVisualStyleBackColor = false;
+            btnDangKi.Click += btnDangKi_Click;
             // 
             // panel3
             // 
             panel3.Controls.Add(lblStatus);
             panel3.Controls.Add(btnDangKi);
-            panel3.Controls.Add(btnDangNhap);
             panel3.Dock = DockStyle.Bottom;
             panel3.Location = new Point(0, 318);
             panel3.Name = "panel3";
@@ -196,24 +178,21 @@
             lblStatus.Location = new Point(0, 72);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(334, 21);
-            lblStatus.TabIndex = 2;
+            lblStatus.TabIndex = 0;
             lblStatus.Text = "Loading...";
             lblStatus.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // FormLogin
+            // FormRegister
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(334, 411);
-            Controls.Add(panel3);
-            Controls.Add(panel2);
             Controls.Add(panel1);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximizeBox = false;
-            Name = "FormLogin";
+            Controls.Add(panel2);
+            Controls.Add(panel3);
+            Name = "FormRegister";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Caro Online";
+            Text = "FormRegister";
             panel1.ResumeLayout(false);
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
@@ -226,16 +205,15 @@
         private Panel panel1;
         private Label label1;
         private Panel panel2;
-        private ComboBox txtServer;
-        private Button btnDangKi;
-        private Button btnDangNhap;
-        private Label label4;
-        private Label label3;
-        private Label label2;
+        private Label txtMauKhau;
+        private Label txtTenTaiKhoan;
         private TextBox txtMatKhau;
         private TextBox txtTenDangNhap;
-        private Button btnKetNoi;
+        private Button btnDangKi;
         private Panel panel3;
         private Label lblStatus;
+        private TextBox textBox1;
+        private Label txtName;
+        private Label lblServer;
     }
 }

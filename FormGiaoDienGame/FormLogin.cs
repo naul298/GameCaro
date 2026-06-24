@@ -132,18 +132,17 @@ namespace FormGiaoDienGame
 
                     if (response.Command == (int)SocketCommand.LOGIN_OK)
                     {
-                        string displayName = response.Message; // Server chỉ gửi displayName
+                        string displayName = response.Message;
 
-                        SetStatus(Color.Green, $"✔ Xin chào {displayName}!");
-
-                        var formLobby = new FormLobby(_socket, displayName);
+                        lblStatus.ForeColor = Color.Green; lblStatus.Text = "Xin chao " + displayName;
+                        var formLobby = new FormLobby(socket, displayName);
                         formLobby.Show();
                         this.Hide();
                     }
                     else
                     {
                         lblStatus.ForeColor = Color.Red;
-                        lblStatus.Text = $"✘ {response.Message}";
+                        lblStatus.Text = $"{response.Message}";
                     }
                 });
             });
@@ -154,6 +153,14 @@ namespace FormGiaoDienGame
         {
             lblStatus.ForeColor = Color.Gray;
             lblStatus.Text = "Chức năng đăng ký chưa khả dụng.";
+        }
+
+        private void btnDangKi_Click_1(object sender, EventArgs e)
+        {
+            // Truyền IP hiện tại và socket đang dùng sang FormRegister
+            var formRegister = new FormRegister(txtServer.Text.Trim());
+            formRegister.Show();
+            this.Hide();
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿namespace ServerGame.Models;
 
-// Danh sách lệnh giao tiếp giữa client và server
 public enum SocketCommand
-{
-    // --- Game ---
+{   
+    //gameplay
     SEND_POINT = 0,
     THONG_BAO = 1,
     CHOI_LAI = 2,
@@ -13,12 +12,12 @@ public enum SocketCommand
     HET_GIO = 6,
     THOAT_PHONG = 7,
 
-    // --- Auth ---
+    //Dang nhap
     LOGIN = 8,
     LOGIN_OK = 9,
     LOGIN_FAIL = 10,
 
-    // --- Lobby ---
+    //Lobby
     GET_ROOMS = 11,  // Client xin danh sách phòng
     ROOMS_LIST = 12,  // Server trả danh sách phòng (JSON)
     CREATE_ROOM = 13,  // Client tạo phòng mới
@@ -28,4 +27,9 @@ public enum SocketCommand
     JOIN_OK = 17,  // Vào phòng thành công, bắt đầu game
     JOIN_FAIL = 18,  // Phòng đầy hoặc không tồn tại
     ROOM_DELETED = 19,  // Phòng đã bị xóa
+
+    //Dang ki
+    REGISTER = 20,
+    REGISTER_OK = 21,
+    REGISTER_FAIL = 22,
 }
