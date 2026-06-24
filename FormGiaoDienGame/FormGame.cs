@@ -153,7 +153,7 @@ namespace FormGiaoDienGame
             }
             else
             {
-                socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point()));
+                //socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point()));
             }
         }
     }

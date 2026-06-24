@@ -38,6 +38,7 @@
             txtIP = new TextBox();
             btnLan = new Button();
             lblThoat = new Button();
+            lblConnect = new Label();
             lblStatus = new Label();
             lblPlayer2 = new Label();
             lblPlayer1 = new Label();
@@ -46,7 +47,6 @@
             lblSoPhong = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             prcbCoolDown = new ProgressBar();
-            lblConnect = new Label();
             tmCoolDown = new System.Windows.Forms.Timer(components);
             pnlButton.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -67,12 +67,13 @@
             // 
             // button1
             // 
-            button1.BackColor = Color.FromArgb(74, 144, 226);
+            button1.BackColor = SystemColors.Control;
             button1.Cursor = Cursors.Hand;
-            button1.FlatStyle = FlatStyle.Flat;
+            button1.FlatStyle = FlatStyle.Popup;
             button1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button1.ForeColor = Color.White;
-            button1.Location = new Point(0, 0);
+            button1.ForeColor = SystemColors.ControlText;
+            button1.ImageAlign = ContentAlignment.MiddleLeft;
+            button1.Location = new Point(18, 0);
             button1.Name = "button1";
             button1.Size = new Size(120, 35);
             button1.TabIndex = 1;
@@ -81,12 +82,13 @@
             // 
             // button2
             // 
-            button2.BackColor = Color.FromArgb(255, 138, 101);
+            button2.BackColor = SystemColors.Control;
             button2.Cursor = Cursors.Hand;
-            button2.FlatStyle = FlatStyle.Flat;
+            button2.FlatStyle = FlatStyle.Popup;
             button2.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button2.ForeColor = Color.White;
-            button2.Location = new Point(243, 0);
+            button2.ForeColor = SystemColors.ControlText;
+            button2.ImageAlign = ContentAlignment.MiddleLeft;
+            button2.Location = new Point(296, 0);
             button2.Name = "button2";
             button2.Size = new Size(120, 35);
             button2.TabIndex = 2;
@@ -95,12 +97,13 @@
             // 
             // button4
             // 
-            button4.BackColor = Color.FromArgb(242, 184, 75);
+            button4.BackColor = SystemColors.Control;
             button4.Cursor = Cursors.Hand;
-            button4.FlatStyle = FlatStyle.Flat;
+            button4.FlatStyle = FlatStyle.Popup;
             button4.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button4.ForeColor = Color.White;
-            button4.Location = new Point(126, 0);
+            button4.ForeColor = SystemColors.ControlText;
+            button4.ImageAlign = ContentAlignment.MiddleLeft;
+            button4.Location = new Point(157, 0);
             button4.Name = "button4";
             button4.Size = new Size(120, 35);
             button4.TabIndex = 4;
@@ -109,7 +112,7 @@
             // 
             // pnlButton
             // 
-            pnlButton.BackColor = Color.FromArgb(255, 247, 230);
+            pnlButton.BackColor = SystemColors.InactiveCaption;
             pnlButton.Controls.Add(txtIP);
             pnlButton.Controls.Add(btnLan);
             pnlButton.Controls.Add(lblThoat);
@@ -125,19 +128,20 @@
             // 
             // txtIP
             // 
-            txtIP.Location = new Point(126, 41);
+            txtIP.Font = new Font("Segoe UI", 12F);
+            txtIP.Location = new Point(305, 39);
             txtIP.Name = "txtIP";
-            txtIP.Size = new Size(100, 23);
+            txtIP.Size = new Size(100, 29);
             txtIP.TabIndex = 9;
             // 
             // btnLan
             // 
-            btnLan.BackColor = Color.FromArgb(232, 93, 93);
+            btnLan.BackColor = SystemColors.Control;
             btnLan.Cursor = Cursors.Hand;
-            btnLan.FlatStyle = FlatStyle.Flat;
             btnLan.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            btnLan.ForeColor = Color.White;
-            btnLan.Location = new Point(0, 35);
+            btnLan.ForeColor = SystemColors.ControlText;
+            btnLan.ImageAlign = ContentAlignment.MiddleLeft;
+            btnLan.Location = new Point(42, 35);
             btnLan.Name = "btnLan";
             btnLan.Size = new Size(120, 35);
             btnLan.TabIndex = 8;
@@ -147,23 +151,34 @@
             // 
             // lblThoat
             // 
-            lblThoat.BackColor = Color.FromArgb(232, 93, 93);
+            lblThoat.BackColor = SystemColors.Control;
             lblThoat.Cursor = Cursors.Hand;
-            lblThoat.FlatStyle = FlatStyle.Flat;
+            lblThoat.FlatStyle = FlatStyle.Popup;
             lblThoat.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            lblThoat.ForeColor = Color.White;
-            lblThoat.Location = new Point(369, 0);
+            lblThoat.ForeColor = SystemColors.ControlText;
+            lblThoat.ImageAlign = ContentAlignment.MiddleLeft;
+            lblThoat.Location = new Point(435, 0);
             lblThoat.Name = "lblThoat";
             lblThoat.Size = new Size(120, 35);
             lblThoat.TabIndex = 7;
             lblThoat.Text = "Thoát phòng";
             lblThoat.UseVisualStyleBackColor = false;
             // 
+            // lblConnect
+            // 
+            lblConnect.AutoSize = true;
+            lblConnect.Font = new Font("Segoe UI", 12F);
+            lblConnect.Location = new Point(446, 47);
+            lblConnect.Name = "lblConnect";
+            lblConnect.Size = new Size(93, 21);
+            lblConnect.TabIndex = 9;
+            lblConnect.Text = "test connect";
+            // 
             // lblStatus
             // 
             lblStatus.Anchor = AnchorStyles.None;
             lblStatus.AutoSize = true;
-            lblStatus.BackColor = Color.FromArgb(255, 247, 230);
+            lblStatus.BackColor = SystemColors.Control;
             lblStatus.Font = new Font("Calibri", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
             lblStatus.ForeColor = Color.Gray;
             lblStatus.Location = new Point(260, 62);
@@ -177,12 +192,13 @@
             // 
             lblPlayer2.Anchor = AnchorStyles.Left;
             lblPlayer2.AutoSize = true;
-            lblPlayer2.BackColor = Color.FromArgb(255, 247, 230);
-            lblPlayer2.Font = new Font("Times New Roman", 14.25F, FontStyle.Bold);
-            lblPlayer2.ForeColor = Color.FromArgb(31, 41, 55);
-            lblPlayer2.Location = new Point(402, 32);
+            lblPlayer2.BackColor = SystemColors.Control;
+            lblPlayer2.Font = new Font("Segoe UI", 12F);
+            lblPlayer2.ForeColor = SystemColors.ActiveCaptionText;
+            lblPlayer2.ImageAlign = ContentAlignment.MiddleLeft;
+            lblPlayer2.Location = new Point(402, 33);
             lblPlayer2.Name = "lblPlayer2";
-            lblPlayer2.Size = new Size(116, 22);
+            lblPlayer2.Size = new Size(101, 21);
             lblPlayer2.TabIndex = 2;
             lblPlayer2.Text = "Người chơi 2";
             lblPlayer2.TextAlign = ContentAlignment.MiddleCenter;
@@ -191,9 +207,10 @@
             // 
             lblPlayer1.Anchor = AnchorStyles.Right;
             lblPlayer1.AutoSize = true;
-            lblPlayer1.BackColor = Color.FromArgb(255, 247, 230);
+            lblPlayer1.BackColor = SystemColors.Control;
             lblPlayer1.Font = new Font("Times New Roman", 14.25F, FontStyle.Bold);
-            lblPlayer1.ForeColor = Color.FromArgb(31, 41, 55);
+            lblPlayer1.ForeColor = SystemColors.ActiveCaptionText;
+            lblPlayer1.ImageAlign = ContentAlignment.MiddleLeft;
             lblPlayer1.Location = new Point(52, 32);
             lblPlayer1.Name = "lblPlayer1";
             lblPlayer1.Size = new Size(116, 22);
@@ -204,8 +221,9 @@
             // lblTysoP1
             // 
             lblTysoP1.Anchor = AnchorStyles.Right;
-            lblTysoP1.Font = new Font("Calibri", 14.25F, FontStyle.Bold);
+            lblTysoP1.Font = new Font("Segoe UI", 12F);
             lblTysoP1.ForeColor = Color.FromArgb(255, 107, 107);
+            lblTysoP1.ImageAlign = ContentAlignment.MiddleLeft;
             lblTysoP1.Location = new Point(119, 62);
             lblTysoP1.Name = "lblTysoP1";
             lblTysoP1.Size = new Size(49, 19);
@@ -216,8 +234,9 @@
             // lblTysoP2
             // 
             lblTysoP2.Anchor = AnchorStyles.Left;
-            lblTysoP2.Font = new Font("Calibri", 14.25F, FontStyle.Bold);
+            lblTysoP2.Font = new Font("Segoe UI", 12F);
             lblTysoP2.ForeColor = Color.FromArgb(91, 141, 239);
+            lblTysoP2.ImageAlign = ContentAlignment.MiddleLeft;
             lblTysoP2.Location = new Point(402, 62);
             lblTysoP2.Name = "lblTysoP2";
             lblTysoP2.Size = new Size(49, 19);
@@ -229,18 +248,19 @@
             // 
             lblSoPhong.Anchor = AnchorStyles.None;
             lblSoPhong.AutoSize = true;
-            lblSoPhong.Font = new Font("Calibri", 14.25F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            lblSoPhong.ForeColor = Color.FromArgb(31, 41, 55);
-            lblSoPhong.Location = new Point(243, 3);
+            lblSoPhong.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            lblSoPhong.ForeColor = SystemColors.ActiveCaptionText;
+            lblSoPhong.ImageAlign = ContentAlignment.MiddleLeft;
+            lblSoPhong.Location = new Point(247, 4);
             lblSoPhong.Name = "lblSoPhong";
-            lblSoPhong.Size = new Size(83, 23);
+            lblSoPhong.Size = new Size(76, 21);
             lblSoPhong.TabIndex = 4;
             lblSoPhong.Text = "Số phòng";
             lblSoPhong.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.BackColor = Color.FromArgb(255, 247, 230);
+            tableLayoutPanel1.BackColor = SystemColors.InactiveCaption;
             tableLayoutPanel1.ColumnCount = 3;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
@@ -273,15 +293,6 @@
             prcbCoolDown.Style = ProgressBarStyle.Continuous;
             prcbCoolDown.TabIndex = 8;
             // 
-            // lblConnect
-            // 
-            lblConnect.AutoSize = true;
-            lblConnect.Location = new Point(488, 49);
-            lblConnect.Name = "lblConnect";
-            lblConnect.Size = new Size(72, 15);
-            lblConnect.TabIndex = 9;
-            lblConnect.Text = "test connect";
-            // 
             // tmCoolDown
             // 
             tmCoolDown.Tick += tmCoolDown_Tick;
@@ -290,7 +301,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(248, 250, 252);
+            BackColor = SystemColors.Control;
             ClientSize = new Size(572, 611);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(pnlButton);
@@ -301,7 +312,6 @@
             Name = "FormGame";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Caro Online";
-            FormClosing += FormGame_FormClosing;
             Shown += FormGame_Shown;
             pnlButton.ResumeLayout(false);
             pnlButton.PerformLayout();
