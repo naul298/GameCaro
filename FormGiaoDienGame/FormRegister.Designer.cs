@@ -28,16 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRegister));
             panel1 = new Panel();
             label1 = new Label();
             panel2 = new Panel();
-            lblServer = new Label();
             textBox1 = new TextBox();
             txtName = new Label();
             txtMauKhau = new Label();
             txtTenTaiKhoan = new Label();
             txtMatKhau = new TextBox();
             txtTenDangNhap = new TextBox();
+            lblServer = new Label();
             btnDangKi = new Button();
             panel3 = new Panel();
             lblStatus = new Label();
@@ -81,18 +82,6 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(334, 228);
             panel2.TabIndex = 0;
-            // 
-            // lblServer
-            // 
-            lblServer.Dock = DockStyle.Top;
-            lblServer.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            lblServer.ForeColor = Color.Black;
-            lblServer.Location = new Point(0, 0);
-            lblServer.Name = "lblServer";
-            lblServer.Size = new Size(334, 15);
-            lblServer.TabIndex = 0;
-            lblServer.Text = "label2";
-            lblServer.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // textBox1
             // 
@@ -148,6 +137,17 @@
             txtTenDangNhap.Size = new Size(294, 29);
             txtTenDangNhap.TabIndex = 2;
             // 
+            // lblServer
+            // 
+            lblServer.Dock = DockStyle.Top;
+            lblServer.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            lblServer.ForeColor = Color.Black;
+            lblServer.Location = new Point(0, 0);
+            lblServer.Name = "lblServer";
+            lblServer.Size = new Size(334, 15);
+            lblServer.TabIndex = 0;
+            lblServer.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // btnDangKi
             // 
             btnDangKi.BackColor = Color.Navy;
@@ -183,7 +183,6 @@
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(334, 21);
             lblStatus.TabIndex = 0;
-            lblStatus.Text = "Loading...";
             lblStatus.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // FormRegister
@@ -195,6 +194,8 @@
             Controls.Add(panel1);
             Controls.Add(panel2);
             Controls.Add(panel3);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "FormRegister";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "FormRegister";

@@ -167,10 +167,11 @@
             btnDangNhap.TabIndex = 0;
             btnDangNhap.Text = "Đăng nhập";
             btnDangNhap.UseVisualStyleBackColor = false;
-            btnDangNhap.Click += btnDangNhap_Click_1;
+            btnDangNhap.Click += btnDangNhap_Click;
             // 
             // btnDangKi
             // 
+            btnDangKi.BackColor = Color.FromArgb(0, 192, 0);
             btnDangKi.FlatStyle = FlatStyle.Popup;
             btnDangKi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             btnDangKi.ForeColor = Color.Navy;
@@ -179,8 +180,8 @@
             btnDangKi.Size = new Size(130, 40);
             btnDangKi.TabIndex = 1;
             btnDangKi.Text = "Đăng kí";
-            btnDangKi.UseVisualStyleBackColor = true;
-            btnDangKi.Click += btnDangKi_Click_1;
+            btnDangKi.UseVisualStyleBackColor = false;
+            btnDangKi.Click += btnDangKi_Click;
             // 
             // panel3
             // 
@@ -202,7 +203,6 @@
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(334, 21);
             lblStatus.TabIndex = 2;
-            lblStatus.Text = "Loading...";
             lblStatus.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // FormLogin

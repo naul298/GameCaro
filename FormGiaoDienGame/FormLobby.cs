@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FormGiaoDienGame
 {
@@ -16,35 +17,27 @@ namespace FormGiaoDienGame
             _socket = socket;
             _displayName = displayName;
 
-            lblUserName.Text = $"Xin chào, {displayName}";
-
-            // Gắn events
-            btnTaoPhong.Click += BtnTaoPhong_Click;
-            btnVaoPhong.Click += BtnVaoPhong_Click;
-            btnDangXuat.Click += BtnDangXuat_Click;
-            btnSearch.Click += BtnSearch_Click;
-            txtSearch.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) BtnSearch_Click(s, e); };
-            FormClosing += FormLobby_FormClosing;
-
+            lblUserName.Text = $"Xin chào: {displayName}";
+            pnlTaoPhong.Visible = false;
             SetupGrid();
-            XinDanhSachPhong();
             Listen();
+            XinDanhSachPhong();
         }
 
         // Cấu hình cột cho DataGridView
         private void SetupGrid()
         {
-            dgvRooms.Columns.Clear();
-            dgvRooms.Columns.Add(new DataGridViewTextBoxColumn
-            { Name = "colId", HeaderText = "ID", Width = 50, ReadOnly = true });
-            dgvRooms.Columns.Add(new DataGridViewTextBoxColumn
-            { Name = "colName", HeaderText = "Tên phòng", FillWeight = 50, ReadOnly = true });
-            dgvRooms.Columns.Add(new DataGridViewTextBoxColumn
-            { Name = "colHost", HeaderText = "Chủ phòng", FillWeight = 30, ReadOnly = true });
-            dgvRooms.Columns.Add(new DataGridViewTextBoxColumn
-            { Name = "colPlayers", HeaderText = "Người chơi", Width = 90, ReadOnly = true });
-            dgvRooms.Columns.Add(new DataGridViewTextBoxColumn
-            { Name = "colStatus", HeaderText = "Trạng thái", Width = 90, ReadOnly = true });
+            dgvLobby.AutoGenerateColumns = false;
+            dgvLobby.AllowUserToAddRows = false;
+            dgvLobby.ReadOnly = true;
+            dgvLobby.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
+            dgvLobby.Columns.Clear();
+            dgvLobby.Columns.Add(new DataGridViewTextBoxColumn { Name = "colId", HeaderText = "ID", Width = 40 });
+            dgvLobby.Columns.Add(new DataGridViewTextBoxColumn { Name = "colName", HeaderText = "Tên phòng", Width = 150 });
+            dgvLobby.Columns.Add(new DataGridViewTextBoxColumn { Name = "colHost", HeaderText = "Chủ phòng", Width = 120 });
+            dgvLobby.Columns.Add(new DataGridViewTextBoxColumn { Name = "colPlayers", HeaderText = "Người", Width = 60 });
+            dgvLobby.Columns.Add(new DataGridViewTextBoxColumn { Name = "colStatus", HeaderText = "Trạng thái", Width = 80 });
         }
 
         // Gửi yêu cầu lấy danh sách phòng
@@ -53,74 +46,32 @@ namespace FormGiaoDienGame
             _socket.Send(new SocketData((int)SocketCommand.GET_ROOMS, "", new Point()));
         }
 
-        // Hiển thị danh sách phòng lên grid
+        //Hiển thị danh sách phòng lên grid
         private void HienThiPhong(List<RoomInfo> rooms)
         {
-            string keyword = txtSearch.Text.Trim().ToLower();
-            var filtered = string.IsNullOrEmpty(keyword)
-                ? rooms
-                : rooms.Where(r => r.Name.ToLower().Contains(keyword)).ToList();
-
-            dgvRooms.Rows.Clear();
-            foreach (var r in filtered)
+            if (dgvLobby.InvokeRequired)
             {
-                dgvRooms.Rows.Add(
-                    r.Id,
-                    r.Name,
-                    string.IsNullOrEmpty(r.HostName) ? "(trống)" : r.HostName,
-                    $"{r.PlayerCount}/2",
-                    r.IsFull ? "Đang chơi" : "Chờ"
-                );
-                // Tô màu dòng đang chơi
-                var row = dgvRooms.Rows[dgvRooms.Rows.Count - 1];
+                dgvLobby.Invoke(() => HienThiPhong(rooms));
+                return;
+            }
+
+            dgvLobby.Rows.Clear();
+
+            foreach (var r in rooms)
+            {
+                int rowIndex = dgvLobby.Rows.Add();
+                DataGridViewRow row = dgvLobby.Rows[rowIndex];
+
+                row.Cells["colId"].Value = r.Id;
+                row.Cells["colName"].Value = r.Name;
+                row.Cells["colHost"].Value = string.IsNullOrEmpty(r.HostName) ? "(trống)" : r.HostName;
+                row.Cells["colPlayers"].Value = $"{r.PlayerCount}/2";
+                row.Cells["colStatus"].Value = r.IsFull ? "Đang chơi" : "Chờ";
+
                 if (r.IsFull)
                     row.DefaultCellStyle.ForeColor = Color.Gray;
             }
         }
-
-        // ── BUTTON HANDLERS ─────────────────────────────────────
-
-        private void BtnTaoPhong_Click(object? sender, EventArgs e)
-        {
-            string name = Microsoft.VisualBasic.Interaction.InputBox(
-                "Nhập tên phòng:", "Tạo phòng mới", $"Phòng của {_displayName}");
-            if (string.IsNullOrWhiteSpace(name)) return;
-
-            _socket.Send(new SocketData((int)SocketCommand.CREATE_ROOM, name, new Point()));
-        }
-
-        private void BtnVaoPhong_Click(object? sender, EventArgs e)
-        {
-            if (dgvRooms.CurrentRow == null) return;
-
-            int roomId = Convert.ToInt32(dgvRooms.CurrentRow.Cells["colId"].Value);
-            bool isFull = dgvRooms.CurrentRow.Cells["colStatus"].Value?.ToString() == "Đang chơi";
-
-            if (isFull)
-            {
-                MessageBox.Show("Phòng đã đầy!", "Thông báo");
-                return;
-            }
-
-            _socket.Send(new SocketData((int)SocketCommand.JOIN_ROOM,
-                roomId.ToString(), new Point()));
-        }
-
-        private void BtnDangXuat_Click(object? sender, EventArgs e)
-        {
-            if (MessageBox.Show("Đăng xuất?", "Thông báo",
-                MessageBoxButtons.OKCancel) != DialogResult.OK) return;
-
-            this.Close();
-        }
-
-        private void BtnSearch_Click(object? sender, EventArgs e)
-        {
-            HienThiPhong(_rooms);
-        }
-
-        // ── LISTEN ──────────────────────────────────────────────
-
         private void Listen()
         {
             var t = new Thread(() =>
@@ -130,10 +81,18 @@ namespace FormGiaoDienGame
                     try
                     {
                         var data = _socket.Receive() as SocketData;
-                        if (data == null) break;
+                        if (data == null)
+                        {
+                            break;
+                        }
+                        Console.WriteLine($"[DEBUG] Nhận lệnh: {(SocketCommand)data.Command}");
                         this.Invoke(() => ProcessData(data));
                     }
-                    catch { break; }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[DEBUG] Listen() lỗi: {ex.Message}");
+                        break;
+                    }
                 }
             });
             t.IsBackground = true;
@@ -146,8 +105,7 @@ namespace FormGiaoDienGame
             {
                 case SocketCommand.ROOMS_LIST:
                     // Nhận toàn bộ danh sách lần đầu
-                    _rooms = JsonSerializer.Deserialize<List<RoomInfo>>(data.Message)
-                             ?? new List<RoomInfo>();
+                    _rooms = JsonSerializer.Deserialize<List<RoomInfo>>(data.Message) ?? new List<RoomInfo>();
                     HienThiPhong(_rooms);
                     break;
 
@@ -172,7 +130,6 @@ namespace FormGiaoDienGame
 
                 case SocketCommand.JOIN_OK:
                     // Vào phòng thành công → mở FormGame
-                    // Format: "roomName|playerIndex|myName|opponentName"
                     var parts = data.Message.Split('|');
                     string roomName = parts[0];
                     int playerIndex = int.Parse(parts[1]);
@@ -201,21 +158,73 @@ namespace FormGiaoDienGame
             }
         }
 
-        private void FormLobby_FormClosing(object? sender, FormClosingEventArgs e)
+        private void btnDangXuat_Click_1(object sender, EventArgs e)
         {
-            _socket.Send(new SocketData((int)SocketCommand.LEAVE_ROOM, "", new Point()));
-            Application.Exit();
-        }
-    }
+            if (MessageBox.Show("Đăng xuất?", "Thông báo",
+                MessageBoxButtons.OKCancel) != DialogResult.OK) return;
 
-    // DTO để deserialize JSON danh sách phòng
-    public class RoomInfo
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = "";
-        public string Status { get; set; } = "";
-        public string HostName { get; set; } = "";
-        public int PlayerCount { get; set; }
-        public bool IsFull { get; set; }
+            this.Close();
+        }
+
+        private void btnTaoPhong_Click_1(object sender, EventArgs e)
+        {
+            txtTenPhong.Clear();
+            pnlTaoPhong.Visible = true;
+            txtTenPhong.Focus();
+        }
+
+        private void btnVaoPhong_Click(object sender, EventArgs e)
+        {
+            if (dgvLobby.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn một phòng trong danh sách trước!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            DataGridViewRow row = dgvLobby.SelectedRows[0];
+
+            // Tên cột khớp với SetupGrid() đã khai báo: "colId"
+            object? idValue = row.Cells["colId"].Value;
+            if (idValue == null) return;
+
+            int roomId = Convert.ToInt32(idValue);
+
+            _socket.Send(new SocketData(
+                (int)SocketCommand.JOIN_ROOM,
+                roomId.ToString(),
+                new Point()));
+        }
+
+        private void btnLamMoi_Click(object sender, EventArgs e)
+        {
+            XinDanhSachPhong();
+        }
+
+        private void btnHuy_Click(object sender, EventArgs e)
+        {
+            pnlTaoPhong.Visible = false;
+            txtTenPhong.Clear();
+        }
+
+        private void btnTao_Click(object sender, EventArgs e)
+        {
+            string tenPhong = txtTenPhong.Text.Trim();
+
+            if (string.IsNullOrEmpty(tenPhong))
+            {
+                MessageBox.Show("Tên phòng không được để trống", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtTenPhong.Focus();
+                return;
+            }
+
+            // Ẩn panel trước khi gửi
+            pnlTaoPhong.Visible = false;
+            txtTenPhong.Clear();
+
+            _socket.Send(new SocketData(
+                (int)SocketCommand.CREATE_ROOM,
+                tenPhong,
+                new Point()));
+        }
     }
 }
