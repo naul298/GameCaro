@@ -1,5 +1,3 @@
-using System.Net.NetworkInformation;
-
 namespace FormGiaoDienGame
 {
     public partial class FormGame : Form

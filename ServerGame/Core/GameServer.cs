@@ -1,17 +1,15 @@
-﻿using System.Net;
+﻿using ServerGame.Data;
+using ServerGame.Models;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using ServerGame.Data;
-using ServerGame.Models;
-
 namespace ServerGame.Core;
 
 public class GameServer
 {
     private const int PORT = 12345;
-    private const string CONN_STR ="Server=(localdb)\\MSSQLLocalDB;Database=dbCaro;" +"Trusted_Connection=True;TrustServerCertificate=True;";
-
+    private const string CONN_STR = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Học Tập\Năm 2\CoCaro\CoCaro\data\dataCaro.mdf;Integrated Security=True;";
     // Danh sách tất cả client đang kết nối và tất cả phòng
     private readonly List<PlayerSession> _clients = new();
     private readonly List<LobbyRoom> _rooms = new();
@@ -270,9 +268,8 @@ public class GameServer
         else
         {
             // Còn người hoặc phòng mặc định → cập nhật
-            int newHostId = room.Players.Count > 0 ? room.Players[0].UserId : 0;
-            DatabaseHelper.UpdateRoom(CONN_STR, room.Id,
-                newHostId, room.PlayerCount, "Waiting");
+            int newHostId = room.Players.Count > 0 ? room.Players[0].UserId : room.HostId;
+            DatabaseHelper.UpdateRoom(CONN_STR, room.Id, newHostId, room.PlayerCount, "Waiting");
 
             // Nếu còn người trong phòng, thông báo người đó thành host mới
             if (room.Players.Count > 0)
@@ -346,7 +343,8 @@ public class GameServer
             client.Close(); return null;
         }
 
-        string username = parts[0], password = parts[1];
+        string username = parts[0].Trim();
+        string password = parts[1].Trim();
         string? displayName = DatabaseHelper.KiemTraLogin(CONN_STR, username, password);
         if (displayName == null)
         {

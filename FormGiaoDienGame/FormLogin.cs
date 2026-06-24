@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Net.NetworkInformation;
 
 namespace FormGiaoDienGame
 {
@@ -83,7 +75,24 @@ namespace FormGiaoDienGame
         }
 
         // Nút Đăng nhập
-        private void btnDangNhap_Click(object sender, EventArgs e)
+       
+
+        // Nút Đăng kí (chưa implement)
+        private void btnDangKi_Click(object sender, EventArgs e)
+        {
+            lblStatus.ForeColor = Color.Gray;
+            lblStatus.Text = "Chức năng đăng ký chưa khả dụng.";
+        }
+
+        private void btnDangKi_Click_1(object sender, EventArgs e)
+        {
+            // Truyền IP hiện tại và socket đang dùng sang FormRegister
+            var formRegister = new FormRegister(txtServer.Text.Trim());
+            formRegister.Show();
+            this.Hide();
+        }
+
+        private void btnDangNhap_Click_1(object sender, EventArgs e)
         {
             string tenDangNhap = txtTenDangNhap.Text.Trim();
             string matKhau = txtMatKhau.Text.Trim();
@@ -146,21 +155,6 @@ namespace FormGiaoDienGame
                     }
                 });
             });
-        }
-
-        // Nút Đăng kí (chưa implement)
-        private void btnDangKi_Click(object sender, EventArgs e)
-        {
-            lblStatus.ForeColor = Color.Gray;
-            lblStatus.Text = "Chức năng đăng ký chưa khả dụng.";
-        }
-
-        private void btnDangKi_Click_1(object sender, EventArgs e)
-        {
-            // Truyền IP hiện tại và socket đang dùng sang FormRegister
-            var formRegister = new FormRegister(txtServer.Text.Trim());
-            formRegister.Show();
-            this.Hide();
         }
     }
 }

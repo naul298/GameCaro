@@ -1,7 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using ServerGame.Models;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using ServerGame.Models;
 
 namespace ServerGame.Core;
 

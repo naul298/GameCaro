@@ -167,6 +167,7 @@
             btnDangNhap.TabIndex = 0;
             btnDangNhap.Text = "Đăng nhập";
             btnDangNhap.UseVisualStyleBackColor = false;
+            btnDangNhap.Click += btnDangNhap_Click_1;
             // 
             // btnDangKi
             // 
