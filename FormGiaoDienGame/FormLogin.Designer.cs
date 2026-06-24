@@ -50,7 +50,7 @@
             // 
             // panel1
             // 
-            panel1.BackColor = SystemColors.InactiveCaption;
+            panel1.BackColor = Color.Navy;
             panel1.Controls.Add(label1);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
@@ -60,8 +60,9 @@
             // 
             // label1
             // 
-            label1.BackColor = SystemColors.InactiveBorder;
-            label1.Font = new Font("Segoe UI Semibold", 20.25F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            label1.BackColor = Color.Navy;
+            label1.Font = new Font("Segoe UI", 20.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.ForeColor = SystemColors.Control;
             label1.Location = new Point(12, 8);
             label1.Name = "label1";
             label1.Size = new Size(310, 45);
@@ -71,6 +72,7 @@
             // 
             // panel2
             // 
+            panel2.BackColor = SystemColors.GradientInactiveCaption;
             panel2.Controls.Add(btnKetNoi);
             panel2.Controls.Add(txtServer);
             panel2.Controls.Add(label4);
@@ -80,7 +82,7 @@
             panel2.Controls.Add(txtTenDangNhap);
             panel2.Location = new Point(0, 67);
             panel2.Name = "panel2";
-            panel2.Size = new Size(334, 245);
+            panel2.Size = new Size(334, 208);
             panel2.TabIndex = 0;
             // 
             // btnKetNoi
@@ -89,7 +91,7 @@
             btnKetNoi.BackgroundImageLayout = ImageLayout.Zoom;
             btnKetNoi.FlatStyle = FlatStyle.Popup;
             btnKetNoi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnKetNoi.Location = new Point(218, 201);
+            btnKetNoi.Location = new Point(218, 166);
             btnKetNoi.Name = "btnKetNoi";
             btnKetNoi.Size = new Size(96, 29);
             btnKetNoi.TabIndex = 4;
@@ -101,7 +103,7 @@
             // 
             txtServer.Font = new Font("Segoe UI", 12F);
             txtServer.FormattingEnabled = true;
-            txtServer.Location = new Point(20, 201);
+            txtServer.Location = new Point(20, 166);
             txtServer.Name = "txtServer";
             txtServer.Size = new Size(186, 29);
             txtServer.TabIndex = 3;
@@ -110,7 +112,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic);
-            label4.Location = new Point(12, 177);
+            label4.Location = new Point(12, 139);
             label4.Name = "label4";
             label4.Size = new Size(98, 21);
             label4.TabIndex = 0;
@@ -120,7 +122,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic);
-            label3.Location = new Point(12, 96);
+            label3.Location = new Point(12, 77);
             label3.Name = "label3";
             label3.Size = new Size(82, 21);
             label3.TabIndex = 0;
@@ -139,7 +141,7 @@
             // txtMatKhau
             // 
             txtMatKhau.Font = new Font("Segoe UI", 12F);
-            txtMatKhau.Location = new Point(20, 120);
+            txtMatKhau.Location = new Point(20, 104);
             txtMatKhau.Name = "txtMatKhau";
             txtMatKhau.Size = new Size(294, 29);
             txtMatKhau.TabIndex = 2;
@@ -148,27 +150,30 @@
             // txtTenDangNhap
             // 
             txtTenDangNhap.Font = new Font("Segoe UI", 12F);
-            txtTenDangNhap.Location = new Point(20, 39);
+            txtTenDangNhap.Location = new Point(20, 42);
             txtTenDangNhap.Name = "txtTenDangNhap";
             txtTenDangNhap.Size = new Size(294, 29);
             txtTenDangNhap.TabIndex = 1;
             // 
             // btnDangNhap
             // 
-            btnDangNhap.BackColor = SystemColors.InactiveCaption;
+            btnDangNhap.BackColor = Color.Navy;
             btnDangNhap.FlatStyle = FlatStyle.Popup;
             btnDangNhap.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnDangNhap.ForeColor = SystemColors.ButtonHighlight;
             btnDangNhap.Location = new Point(20, 6);
             btnDangNhap.Name = "btnDangNhap";
             btnDangNhap.Size = new Size(130, 40);
             btnDangNhap.TabIndex = 0;
             btnDangNhap.Text = "Đăng nhập";
             btnDangNhap.UseVisualStyleBackColor = false;
+            btnDangNhap.Click += btnDangNhap_Click_1;
             // 
             // btnDangKi
             // 
             btnDangKi.FlatStyle = FlatStyle.Popup;
             btnDangKi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnDangKi.ForeColor = Color.Navy;
             btnDangKi.Location = new Point(184, 6);
             btnDangKi.Name = "btnDangKi";
             btnDangKi.Size = new Size(130, 40);
@@ -183,17 +188,17 @@
             panel3.Controls.Add(btnDangKi);
             panel3.Controls.Add(btnDangNhap);
             panel3.Dock = DockStyle.Bottom;
-            panel3.Location = new Point(0, 318);
+            panel3.Location = new Point(0, 278);
             panel3.Name = "panel3";
-            panel3.Size = new Size(334, 93);
+            panel3.Size = new Size(334, 68);
             panel3.TabIndex = 1;
             // 
             // lblStatus
             // 
             lblStatus.Dock = DockStyle.Bottom;
             lblStatus.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            lblStatus.ForeColor = SystemColors.ControlDarkDark;
-            lblStatus.Location = new Point(0, 72);
+            lblStatus.ForeColor = SystemColors.ActiveCaptionText;
+            lblStatus.Location = new Point(0, 47);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(334, 21);
             lblStatus.TabIndex = 2;
@@ -204,7 +209,8 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(334, 411);
+            BackColor = SystemColors.GradientInactiveCaption;
+            ClientSize = new Size(334, 346);
             Controls.Add(panel3);
             Controls.Add(panel2);
             Controls.Add(panel1);

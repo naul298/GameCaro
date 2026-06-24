@@ -1,7 +1,7 @@
 ﻿namespace ServerGame.Models;
 
 public enum SocketCommand
-{   
+{
     //gameplay
     SEND_POINT = 0,
     THONG_BAO = 1,

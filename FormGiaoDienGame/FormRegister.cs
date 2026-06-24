@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Windows.Forms;
-
-namespace FormGiaoDienGame
+﻿namespace FormGiaoDienGame
 {
     public partial class FormRegister : Form
     {
@@ -134,6 +125,11 @@ namespace FormGiaoDienGame
                 login.Show();
             else
                 new FormLogin().Show();
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

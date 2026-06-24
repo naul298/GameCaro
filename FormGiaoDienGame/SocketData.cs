@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FormGiaoDienGame
+﻿namespace FormGiaoDienGame
 {
     [Serializable]
     public class SocketData
