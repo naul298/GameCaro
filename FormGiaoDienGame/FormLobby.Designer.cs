@@ -35,14 +35,14 @@
             label1 = new Label();
             panel2 = new Panel();
             panel4 = new Panel();
-            btnSearch = new Button();
+            btnLamMoi = new Button();
             dgvRooms = new DataGridView();
             lblUserName = new Label();
             btnDangXuat = new Button();
             btnTaoPhong = new Button();
             btnVaoPhong = new Button();
+            btnSearch = new Button();
             txtSearch = new TextBox();
-            btnLamMoi = new Button();
             panel1.SuspendLayout();
             panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvRooms).BeginInit();
@@ -79,31 +79,31 @@
             // 
             // panel4
             // 
-            panel4.Controls.Add(btnLamMoi);
+            panel4.Controls.Add(txtSearch);
             panel4.Controls.Add(btnSearch);
+            panel4.Controls.Add(btnLamMoi);
             panel4.Controls.Add(dgvRooms);
             panel4.Controls.Add(lblUserName);
             panel4.Controls.Add(btnDangXuat);
             panel4.Controls.Add(btnTaoPhong);
             panel4.Controls.Add(btnVaoPhong);
-            panel4.Controls.Add(txtSearch);
             panel4.Location = new Point(0, 71);
             panel4.Name = "panel4";
             panel4.Size = new Size(534, 528);
             panel4.TabIndex = 2;
             // 
-            // btnSearch
+            // btnLamMoi
             // 
-            btnSearch.BackColor = SystemColors.Control;
-            btnSearch.BackgroundImageLayout = ImageLayout.Zoom;
-            btnSearch.FlatStyle = FlatStyle.Popup;
-            btnSearch.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnSearch.Location = new Point(321, 34);
-            btnSearch.Name = "btnSearch";
-            btnSearch.Size = new Size(88, 29);
-            btnSearch.TabIndex = 8;
-            btnSearch.Text = "Tìm kiếm";
-            btnSearch.UseVisualStyleBackColor = false;
+            btnLamMoi.BackColor = SystemColors.Control;
+            btnLamMoi.BackgroundImageLayout = ImageLayout.Zoom;
+            btnLamMoi.FlatStyle = FlatStyle.Popup;
+            btnLamMoi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnLamMoi.Location = new Point(424, 34);
+            btnLamMoi.Name = "btnLamMoi";
+            btnLamMoi.Size = new Size(88, 29);
+            btnLamMoi.TabIndex = 9;
+            btnLamMoi.Text = "Làm mới";
+            btnLamMoi.UseVisualStyleBackColor = false;
             // 
             // dgvRooms
             // 
@@ -177,26 +177,21 @@
             btnVaoPhong.Text = "Vào phòng";
             btnVaoPhong.UseVisualStyleBackColor = true;
             // 
+            // btnSearch
+            // 
+            btnSearch.Location = new Point(257, 45);
+            btnSearch.Name = "btnSearch";
+            btnSearch.Size = new Size(75, 23);
+            btnSearch.TabIndex = 10;
+            btnSearch.Text = "button1";
+            btnSearch.UseVisualStyleBackColor = true;
+            // 
             // txtSearch
             // 
-            txtSearch.Font = new Font("Segoe UI", 12F);
-            txtSearch.Location = new Point(32, 34);
+            txtSearch.Location = new Point(176, 40);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(271, 29);
-            txtSearch.TabIndex = 0;
-            // 
-            // btnLamMoi
-            // 
-            btnLamMoi.BackColor = SystemColors.Control;
-            btnLamMoi.BackgroundImageLayout = ImageLayout.Zoom;
-            btnLamMoi.FlatStyle = FlatStyle.Popup;
-            btnLamMoi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnLamMoi.Location = new Point(424, 34);
-            btnLamMoi.Name = "btnLamMoi";
-            btnLamMoi.Size = new Size(88, 29);
-            btnLamMoi.TabIndex = 9;
-            btnLamMoi.Text = "Làm mới";
-            btnLamMoi.UseVisualStyleBackColor = false;
+            txtSearch.Size = new Size(8, 23);
+            txtSearch.TabIndex = 11;
             // 
             // FormLobby
             // 
@@ -226,10 +221,10 @@
         private Button btnDangXuat;
         private Label lblUserName;
         private Button btnVaoPhong;
-        private TextBox txtSearch;
         private Label label1;
         private DataGridView dgvRooms;
-        private Button btnSearch;
         private Button btnLamMoi;
+        private TextBox txtSearch;
+        private Button btnSearch;
     }
 }

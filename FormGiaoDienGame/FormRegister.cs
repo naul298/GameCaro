@@ -135,5 +135,10 @@ namespace FormGiaoDienGame
             else
                 new FormLogin().Show();
         }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
