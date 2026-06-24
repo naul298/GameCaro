@@ -73,7 +73,7 @@
             button1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             button1.ForeColor = SystemColors.ControlText;
             button1.ImageAlign = ContentAlignment.MiddleLeft;
-            button1.Location = new Point(42, 0);
+            button1.Location = new Point(18, 0);
             button1.Name = "button1";
             button1.Size = new Size(120, 35);
             button1.TabIndex = 1;
@@ -88,7 +88,7 @@
             button2.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             button2.ForeColor = SystemColors.ControlText;
             button2.ImageAlign = ContentAlignment.MiddleLeft;
-            button2.Location = new Point(288, 0);
+            button2.Location = new Point(296, 0);
             button2.Name = "button2";
             button2.Size = new Size(120, 35);
             button2.TabIndex = 2;
@@ -103,7 +103,7 @@
             button4.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             button4.ForeColor = SystemColors.ControlText;
             button4.ImageAlign = ContentAlignment.MiddleLeft;
-            button4.Location = new Point(165, 0);
+            button4.Location = new Point(157, 0);
             button4.Name = "button4";
             button4.Size = new Size(120, 35);
             button4.TabIndex = 4;
@@ -157,7 +157,7 @@
             lblThoat.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             lblThoat.ForeColor = SystemColors.ControlText;
             lblThoat.ImageAlign = ContentAlignment.MiddleLeft;
-            lblThoat.Location = new Point(411, 0);
+            lblThoat.Location = new Point(435, 0);
             lblThoat.Name = "lblThoat";
             lblThoat.Size = new Size(120, 35);
             lblThoat.TabIndex = 7;
