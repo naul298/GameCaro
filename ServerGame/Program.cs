@@ -1,7 +1,6 @@
-﻿// ServerGame/Program.cs
-using System.Net;
-using System.Net.Sockets;
+﻿using ServerGame.Core;
 using System.Text;
+<<<<<<< Updated upstream
 using System.Text.Json;
 
 Console.OutputEncoding = Encoding.UTF8;
@@ -67,3 +66,9 @@ static void SendJson(Socket s, object data)
     string json = JsonSerializer.Serialize(data);
     s.Send(Encoding.UTF8.GetBytes(json));
 }
+=======
+
+
+Console.OutputEncoding = Encoding.UTF8;
+new GameServer().Start();
+>>>>>>> Stashed changes
