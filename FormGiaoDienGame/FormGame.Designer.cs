@@ -38,6 +38,7 @@
             txtIP = new TextBox();
             btnLan = new Button();
             lblThoat = new Button();
+            lblConnect = new Label();
             lblStatus = new Label();
             lblPlayer2 = new Label();
             lblPlayer1 = new Label();
@@ -46,7 +47,6 @@
             lblSoPhong = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             prcbCoolDown = new ProgressBar();
-            lblConnect = new Label();
             tmCoolDown = new System.Windows.Forms.Timer(components);
             pnlButton.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -158,6 +158,15 @@
             lblThoat.TabIndex = 7;
             lblThoat.Text = "Thoát phòng";
             lblThoat.UseVisualStyleBackColor = false;
+            // 
+            // lblConnect
+            // 
+            lblConnect.AutoSize = true;
+            lblConnect.Location = new Point(254, 47);
+            lblConnect.Name = "lblConnect";
+            lblConnect.Size = new Size(72, 15);
+            lblConnect.TabIndex = 9;
+            lblConnect.Text = "test connect";
             // 
             // lblStatus
             // 
@@ -272,15 +281,6 @@
             prcbCoolDown.Size = new Size(183, 23);
             prcbCoolDown.Style = ProgressBarStyle.Continuous;
             prcbCoolDown.TabIndex = 8;
-            // 
-            // lblConnect
-            // 
-            lblConnect.AutoSize = true;
-            lblConnect.Location = new Point(488, 49);
-            lblConnect.Name = "lblConnect";
-            lblConnect.Size = new Size(72, 15);
-            lblConnect.TabIndex = 9;
-            lblConnect.Text = "test connect";
             // 
             // tmCoolDown
             // 
