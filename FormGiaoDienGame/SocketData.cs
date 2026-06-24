@@ -22,15 +22,19 @@ namespace FormGiaoDienGame
             this.Point = point;
         }
     }
+
     public enum SocketCommand
     {
-        SEND_POINT,
-        THONG_BAO,
-        CHOI_LAI,
-        CAU_HOA,       
-        DAU_HANG,
-        END,
-        HET_GIO,
-        THOAT_PHONG
+        SEND_POINT,   // = 0
+        THONG_BAO,    // = 1
+        CHOI_LAI,     // = 2
+        CAU_HOA,      // = 3
+        DAU_HANG,     // = 4
+        END,          // = 5
+        HET_GIO,      // = 6
+        THOAT_PHONG,  // = 7
+        LOGIN,        // = 8
+        LOGIN_OK,     // = 9
+        LOGIN_FAIL    // = 10
     }
 }
