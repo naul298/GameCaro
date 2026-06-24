@@ -73,26 +73,14 @@ namespace FormGiaoDienGame
                 });
             });
         }
-
-        // Nút Đăng nhập
-       
-
-        // Nút Đăng kí (chưa implement)
         private void btnDangKi_Click(object sender, EventArgs e)
         {
-            lblStatus.ForeColor = Color.Gray;
-            lblStatus.Text = "Chức năng đăng ký chưa khả dụng.";
-        }
-
-        private void btnDangKi_Click_1(object sender, EventArgs e)
-        {
-            // Truyền IP hiện tại và socket đang dùng sang FormRegister
             var formRegister = new FormRegister(txtServer.Text.Trim());
             formRegister.Show();
             this.Hide();
         }
 
-        private void btnDangNhap_Click_1(object sender, EventArgs e)
+        private void btnDangNhap_Click(object sender, EventArgs e)
         {
             string tenDangNhap = txtTenDangNhap.Text.Trim();
             string matKhau = txtMatKhau.Text.Trim();
@@ -107,7 +95,7 @@ namespace FormGiaoDienGame
             if (socket == null || !socket.KetNoiServer())
             {
                 lblStatus.ForeColor = Color.Red;
-                lblStatus.Text = "Chưa kết nối server. Nhấn 🔍 trước.";
+                lblStatus.Text = "Chưa kết nối server. Vui lòng kết nối đến Server!";
                 return;
             }
 
@@ -116,14 +104,8 @@ namespace FormGiaoDienGame
             btnDangNhap.Enabled = false;
 
             // Gửi gói LOGIN
-            var loginData = new SocketData(
-                (int)SocketCommand.LOGIN,
-                $"{tenDangNhap}|{matKhau}",
-                new Point(0, 0)
-            );
+            var loginData = new SocketData((int)SocketCommand.LOGIN, $"{tenDangNhap}|{matKhau}", new Point(0, 0));
             socket.Send(loginData);
-
-            // Nhận phản hồi
             Task.Run(() =>
             {
                 var response = socket.Receive() as SocketData;

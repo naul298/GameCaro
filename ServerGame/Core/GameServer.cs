@@ -359,7 +359,7 @@ public class GameServer
 
     private static SocketData? NhanGoi(Socket client)
     {
-        byte[] buf = new byte[4096];
+        byte[] buf = new byte[65536];
         int n = client.Receive(buf);
         if (n == 0) return null;
         string json = Encoding.UTF8.GetString(buf, 0, n).Trim('\0');
