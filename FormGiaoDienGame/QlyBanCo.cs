@@ -49,7 +49,8 @@ namespace FormGiaoDienGame
         #endregion
 
         #region Initialize
-        public QlyBanCo(Panel banCo, Label player1, Label player2, Label lblStatus)
+        public QlyBanCo(Panel banCo, Label player1, Label player2, Label lblStatus,
+                string nameX, string nameO)
         {
             this.BanCo = banCo;
             this.Player1 = player1;
@@ -57,14 +58,9 @@ namespace FormGiaoDienGame
             this.LblStatus = lblStatus;
             this.listPlayers = new List<Player>()
             {
-                //Thêm 2 người chơi với tên và hình ảnh quân cờ tương ứng
-                new Player("Lê Hoàng Luân", Properties.Resources.x),
-                new Player("Lê Nhật Hoà", Properties.Resources.o)
+                new Player(nameX, Properties.Resources.x),
+                new Player(nameO, Properties.Resources.o)
             };
-            this.player1.Text = listPlayers[0].Name;
-            this.player2.Text = listPlayers[1].Name;
-            this.curPlayer = 0;
-            CapNhatHeader();
         }
         #endregion
 

@@ -1,60 +1,59 @@
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 
 namespace FormGiaoDienGame
 {
     public partial class FormGame : Form
     {
-        #region Properties
-        QlyBanCo BanCo;
+        private QlyBanCo _banCo;
+        private SocketManager _socket;
+        private int _playerIndex;
 
-        SocketManager socket;
-        #endregion
-        #region Methods
-        public void EndGame()
-        {
-            tmCoolDown.Stop();
-            pnlBanCo.Enabled = false;
-            //MessageBox.Show("Kết thúc");
-        }
-
-        #endregion
-        public FormGame()
+        public FormGame(SocketManager socket, string displayName, int playerIndex)
         {
             InitializeComponent();
-
             Control.CheckForIllegalCrossThreadCalls = false;
 
-            BanCo = new QlyBanCo(pnlBanCo, lblPlayer1, lblPlayer2, lblStatus);
-            BanCo.EndGame += BanCo_EndGame;
-            BanCo.PlayerMark += BanCo_PlayerMark;
+            _socket = socket;
+            _playerIndex = playerIndex;
+
+            string nameX = (playerIndex == 0) ? displayName : "Đối thủ";
+            string nameO = (playerIndex == 1) ? displayName : "Đối thủ";
+
+            _banCo = new QlyBanCo(pnlBanCo, lblPlayer1, lblPlayer2, lblStatus, nameX, nameO);
+            _banCo.EndGame += BanCo_EndGame;
+            _banCo.PlayerMark += BanCo_PlayerMark;
 
             prcbCoolDown.Step = Cons.coolDownStep;
             prcbCoolDown.Maximum = Cons.coolDownTime;
             prcbCoolDown.Value = 0;
-
             tmCoolDown.Interval = Cons.coolDownInterval;
 
-            socket = new SocketManager();
+            _banCo.VeBanCo();
 
-            BanCo.VeBanCo();
+            pnlBanCo.Enabled = (playerIndex == 0);
+            lblStatus.Text = (playerIndex == 0) ? "Đến lượt bạn!" : "Chờ đối thủ đánh...";
 
-            tmCoolDown.Start();
+            if (playerIndex == 0) tmCoolDown.Start();
+            Listen();
         }
 
         private void BanCo_PlayerMark(object? sender, ButtonClickEvent e)
         {
-            tmCoolDown.Start();
             pnlBanCo.Enabled = false;
             prcbCoolDown.Value = 0;
-            socket.Send(new SocketData((int)SocketCommand.SEND_POINT, "", e.ClickPoint));
-            Listen();
+            _socket.Send(new SocketData((int)SocketCommand.SEND_POINT, "", e.ClickPoint));
         }
 
         private void BanCo_EndGame(object? sender, EventArgs e)
         {
-            EndGame();
-            socket.Send(new SocketData((int)SocketCommand.END, "", new Point()));
+            StopGame();
+            _socket.Send(new SocketData((int)SocketCommand.END, "", new Point()));
+        }
+
+        private void StopGame()
+        {
+            tmCoolDown.Stop();
+            pnlBanCo.Enabled = false;
         }
 
         private void tmCoolDown_Tick(object sender, EventArgs e)
@@ -62,99 +61,75 @@ namespace FormGiaoDienGame
             prcbCoolDown.PerformStep();
             if (prcbCoolDown.Value >= prcbCoolDown.Maximum)
             {
-                EndGame();
+                StopGame();
+                lblStatus.Text = "Hết giờ!";
+                _socket.Send(new SocketData((int)SocketCommand.HET_GIO, "", new Point()));
             }
         }
 
-        private void FormGame_Shown(object sender, EventArgs e)
+        private void Listen()
         {
-            txtIP.Text = socket.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
-            if (string.IsNullOrEmpty(txtIP.Text)) { txtIP.Text = socket.GetLocalIPv4(NetworkInterfaceType.Ethernet); }
-        }
-
-        private void btnLan_Click(object sender, EventArgs e)
-        {
-            socket.IP = txtIP.Text;
-
-            if (socket.KetNoiServer())
-            {
-                lblConnect.Text = "✔ Kết nối thành công!";
-                lblConnect.ForeColor = Color.Green;
-                pnlBanCo.Enabled = true;
-                Listen(); // bắt đầu lắng nghe từ server
-            }
-            else
-            {
-                lblConnect.Text = "✘ Không kết nối được!";
-                lblConnect.ForeColor = Color.Red;
-                pnlBanCo.Enabled = false;
-            }
-        }
-        void Listen()
-        {
-            Thread listenThread = new Thread(() =>
+            var t = new Thread(() =>
             {
                 try
                 {
-                    SocketData data = (SocketData)socket.Receive();
-                    ProcessData(data);
+                    var data = _socket.Receive() as SocketData;
+                    if (data != null) ProcessData(data);
                 }
                 catch { }
             });
-            listenThread.IsBackground = true;
-            listenThread.Start();
+            t.IsBackground = true;
+            t.Start();
         }
+
         private void ProcessData(SocketData data)
         {
             switch (data.Command)
             {
-                case (int)SocketCommand.THONG_BAO:
-                    MessageBox.Show(data.Message);
-                    break;
                 case (int)SocketCommand.SEND_POINT:
-                    this.Invoke((MethodInvoker)(() =>
+                    this.Invoke(() =>
                     {
                         prcbCoolDown.Value = 0;
-                        pnlBanCo.Enabled = true;
                         tmCoolDown.Start();
-                        BanCo.OtherPlayerMark(data.Point);
-                    }));
+                        pnlBanCo.Enabled = true;
+                        lblStatus.Text = "Đến lượt bạn!";
+                        _banCo.OtherPlayerMark(data.Point);
+                    });
+                    Listen();
                     break;
-                case (int)SocketCommand.CAU_HOA:
 
-                    break;
-                case (int)SocketCommand.CHOI_LAI:
-
-                    break;
-                case (int)SocketCommand.DAU_HANG:
-
-                    break;
                 case (int)SocketCommand.END:
-                    MessageBox.Show("Win!");
+                    this.Invoke(() => { StopGame(); MessageBox.Show("Đối thủ thắng!", "Kết thúc"); });
                     break;
-                case (int)SocketCommand.HET_GIO:
 
+                case (int)SocketCommand.HET_GIO:
+                    this.Invoke(() => { StopGame(); MessageBox.Show("Đối thủ hết giờ — Bạn thắng!", "Kết thúc"); });
                     break;
+
                 case (int)SocketCommand.THOAT_PHONG:
-                    tmCoolDown.Stop();
-                    MessageBox.Show("Người chơi đã thoát game","Thông báo");
+                    this.Invoke(() => { StopGame(); MessageBox.Show("Đối thủ đã thoát game.", "Thông báo"); });
                     break;
+
                 default:
+                    Listen();
                     break;
             }
-            Listen();
         }
 
         private void FormGame_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(MessageBox.Show("Thoát khỏi trò chơi?","Thông báo",MessageBoxButtons.OKCancel) == DialogResult.OK)
+            if (MessageBox.Show("Thoát khỏi trò chơi?", "Thông báo",
+                MessageBoxButtons.OKCancel) == DialogResult.Cancel)
             {
                 e.Cancel = true;
+                return;
             }
-            else
-            {
-                //socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point()));
-            }
+            try { _socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point())); }
+            catch { }
         }
+
+        // Designer đã đăng ký 3 handler này — giữ empty để không báo lỗi
+        private void FormGame_Shown(object sender, EventArgs e) { }
+        private void btnLan_Click(object sender, EventArgs e) { }
     }
 }
