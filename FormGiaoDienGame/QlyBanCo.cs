@@ -188,7 +188,7 @@ namespace FormGiaoDienGame
                 }
                 else { break; }
             }
-            return countLeft + countRight == 5;
+            return countLeft + countRight >= 5;
         }
         private bool isVertical(Button btn)
         {
@@ -215,7 +215,7 @@ namespace FormGiaoDienGame
                 }
                 else { break; }
             }
-            return countTop + countBottom == 5;
+            return countTop + countBottom >= 5;
         }
         private bool isMainDiagonal(Button btn)
         {
@@ -236,7 +236,7 @@ namespace FormGiaoDienGame
             }
             int countBottom = 0;
             // Đếm quân liên tiếp cùng loại theo hướng ↘ (bắt đầu từ ô kế tiếp)
-            for (int i = 1; i <= Cons.chessWidth - point.X; i++)
+            for (int i = 1; i <= Cons.chieuRongBanCo - point.X; i++)
             {
                 if (point.Y + i >= Cons.chieuCaoBanCo || point.X + i >= Cons.chieuRongBanCo) { break; }
                 if (Matrix[point.Y + i][point.X + i].BackgroundImage == btn.BackgroundImage)
@@ -245,7 +245,7 @@ namespace FormGiaoDienGame
                 }
                 else { break; }
             }
-            return countTop + countBottom == 5;
+            return countTop + countBottom >= 5;
         }
         private bool isSecondaryDiagonal(Button btn)
         {
@@ -274,7 +274,7 @@ namespace FormGiaoDienGame
                 }
                 else { break; }
             }
-            return countTop + countBottom == 5;
+            return countTop + countBottom >= 5;
         }
         private void DoiNguoiChoi()
         {

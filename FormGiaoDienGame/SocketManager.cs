@@ -72,11 +72,11 @@ namespace FormGiaoDienGame
         }
         private bool SendData(Socket target, byte[] data)
         {
-            return target.Send(data) == 1 ? true : false;
+            return target.Send(data) > 0;
         }
         private bool ReceiveData(Socket target, byte[] data)
         {
-            return target.Receive(data) == 1 ? true : false;
+            return target.Receive(data) > 0;
         }
         public string GetLocalIPv4(NetworkInterfaceType _type)
         {
