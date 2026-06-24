@@ -42,6 +42,7 @@
             btnDangNhap = new Button();
             btnDangKi = new Button();
             panel3 = new Panel();
+            lblStatus = new Label();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel3.SuspendLayout();
@@ -59,13 +60,14 @@
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI Semibold", 24.75F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            label1.Location = new Point(75, 6);
+            label1.BackColor = SystemColors.InactiveBorder;
+            label1.Font = new Font("Segoe UI Semibold", 20.25F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            label1.Location = new Point(12, 8);
             label1.Name = "label1";
-            label1.Size = new Size(186, 45);
+            label1.Size = new Size(310, 45);
             label1.TabIndex = 0;
             label1.Text = "Đăng nhập";
+            label1.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panel2
             // 
@@ -83,14 +85,16 @@
             // 
             // btnKetNoi
             // 
+            btnKetNoi.BackColor = SystemColors.Control;
+            btnKetNoi.BackgroundImage = Properties.Resources.kinhlup;
+            btnKetNoi.BackgroundImageLayout = ImageLayout.Zoom;
             btnKetNoi.FlatStyle = FlatStyle.Popup;
             btnKetNoi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnKetNoi.Location = new Point(231, 190);
+            btnKetNoi.Location = new Point(218, 201);
             btnKetNoi.Name = "btnKetNoi";
-            btnKetNoi.Size = new Size(83, 48);
+            btnKetNoi.Size = new Size(42, 29);
             btnKetNoi.TabIndex = 7;
-            btnKetNoi.Text = "Kết nối";
-            btnKetNoi.UseVisualStyleBackColor = true;
+            btnKetNoi.UseVisualStyleBackColor = false;
             // 
             // cboServer
             // 
@@ -152,9 +156,9 @@
             btnDangNhap.BackColor = SystemColors.InactiveCaption;
             btnDangNhap.FlatStyle = FlatStyle.Popup;
             btnDangNhap.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            btnDangNhap.Location = new Point(20, 20);
+            btnDangNhap.Location = new Point(20, 6);
             btnDangNhap.Name = "btnDangNhap";
-            btnDangNhap.Size = new Size(130, 43);
+            btnDangNhap.Size = new Size(130, 40);
             btnDangNhap.TabIndex = 4;
             btnDangNhap.Text = "Đăng nhập";
             btnDangNhap.UseVisualStyleBackColor = false;
@@ -163,28 +167,41 @@
             // 
             btnDangKi.FlatStyle = FlatStyle.Popup;
             btnDangKi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            btnDangKi.Location = new Point(184, 20);
+            btnDangKi.Location = new Point(184, 6);
             btnDangKi.Name = "btnDangKi";
-            btnDangKi.Size = new Size(130, 43);
+            btnDangKi.Size = new Size(130, 40);
             btnDangKi.TabIndex = 5;
             btnDangKi.Text = "Đăng kí";
             btnDangKi.UseVisualStyleBackColor = true;
             // 
             // panel3
             // 
+            panel3.Controls.Add(lblStatus);
             panel3.Controls.Add(btnDangKi);
             panel3.Controls.Add(btnDangNhap);
             panel3.Dock = DockStyle.Bottom;
-            panel3.Location = new Point(0, 312);
+            panel3.Location = new Point(0, 318);
             panel3.Name = "panel3";
-            panel3.Size = new Size(334, 82);
+            panel3.Size = new Size(334, 93);
             panel3.TabIndex = 6;
+            // 
+            // lblStatus
+            // 
+            lblStatus.AutoSize = true;
+            lblStatus.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            lblStatus.ForeColor = SystemColors.ControlDarkDark;
+            lblStatus.Location = new Point(121, 66);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(80, 21);
+            lblStatus.TabIndex = 6;
+            lblStatus.Text = "Loading...";
+            lblStatus.TextAlign = ContentAlignment.BottomCenter;
             // 
             // FormLogin
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(334, 394);
+            ClientSize = new Size(334, 411);
             Controls.Add(panel3);
             Controls.Add(panel2);
             Controls.Add(panel1);
@@ -193,12 +210,12 @@
             MaximizeBox = false;
             Name = "FormLogin";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Đăng nhập";
+            Text = "Caro Online";
             panel1.ResumeLayout(false);
-            panel1.PerformLayout();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
             panel3.ResumeLayout(false);
+            panel3.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -217,5 +234,6 @@
         private TextBox txtTenDangNhap;
         private Button btnKetNoi;
         private Panel panel3;
+        private Label lblStatus;
     }
 }
