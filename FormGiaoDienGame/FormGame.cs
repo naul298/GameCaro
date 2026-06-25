@@ -5,7 +5,12 @@ namespace FormGiaoDienGame
         private QlyBanCo _banCo;
         private SocketManager _socket;
         private int _playerIndex;
+        private bool _isWaiting;
 
+        public FormGame(SocketManager socket, string displayName, int playerIndex, string opponentName, string roomName) : this(socket, displayName, playerIndex, opponentName)
+        {
+            lblSoPhong.Text = roomName;
+        }
         public FormGame(SocketManager socket, string displayName, int playerIndex, string opponentName = "Đối thủ")
         {
             InitializeComponent();
@@ -28,13 +33,26 @@ namespace FormGiaoDienGame
 
             _banCo.VeBanCo();
 
-            pnlBanCo.Enabled = (playerIndex == 0);
-            lblStatus.Text = (playerIndex == 0) ? "Đến lượt bạn!" : "Chờ đối thủ đánh...";
-
-            if (playerIndex == 0) tmCoolDown.Start();
+            _isWaiting = string.IsNullOrEmpty(opponentName);
+            if (_isWaiting)
+            {
+                pnlBanCo.Enabled = false;
+                lblStatus.Text = "Đang chờ đối thủ vào...";
+                // timer không Start — ngưng
+            }
+            else
+            {
+                BatDauGame();
+            }
             Listen();
         }
-
+        private void BatDauGame()
+        {
+            _isWaiting = false;
+            pnlBanCo.Enabled = (_playerIndex == 0);
+            lblStatus.Text = (_playerIndex == 0) ? "Đến lượt bạn!" : "Chờ đối thủ đánh...";
+            if (_playerIndex == 0) tmCoolDown.Start();
+        }
         private void BanCo_PlayerMark(object? sender, ButtonClickEvent e)
         {
             pnlBanCo.Enabled = false;
@@ -64,15 +82,18 @@ namespace FormGiaoDienGame
                 _socket.Send(new SocketData((int)SocketCommand.HET_GIO, "", new Point()));
             }
         }
-
         private void Listen()
         {
             var t = new Thread(() =>
             {
                 try
                 {
-                    var data = _socket.Receive() as SocketData;
-                    if (data != null) ProcessData(data);
+                    while (true)
+                    {
+                        var data = _socket.Receive() as SocketData;
+                        if (data == null) break;
+                        this.Invoke(() => ProcessData(data));
+                    }
                 }
                 catch { }
             });
@@ -84,36 +105,41 @@ namespace FormGiaoDienGame
         {
             switch (data.Command)
             {
+                case (int)SocketCommand.OPPONENT_JOINED:
+                    // Format message: "roomName|playerIndex|myName|opponentName"
+                    var joinParts = data.Message.Split('|');
+                    string opponentName = joinParts.Length > 3 ? joinParts[3] : "Đối thủ";
+                    string roomName = joinParts.Length > 0 ? joinParts[0] : "";
+
+                    lblSoPhong.Text = roomName;
+                    lblPlayer2.Text = opponentName; // Cập nhật tên đối thủ lên UI
+                    BatDauGame();                   // Mở khóa bàn cờ, bắt đầu timer
+                    break;
+
                 case (int)SocketCommand.SEND_POINT:
-                    this.Invoke(() =>
-                    {
-                        prcbCoolDown.Value = 0;
-                        tmCoolDown.Start();
-                        pnlBanCo.Enabled = true;
-                        lblStatus.Text = "Đến lượt bạn!";
-                        _banCo.OtherPlayerMark(data.Point);
-                    });
-                    Listen();
+                    prcbCoolDown.Value = 0;
+                    tmCoolDown.Start();
+                    pnlBanCo.Enabled = true;
+                    lblStatus.Text = "Đến lượt bạn!";
+                    _banCo.OtherPlayerMark(data.Point);
                     break;
 
                 case (int)SocketCommand.END:
-                    this.Invoke(() => { StopGame(); MessageBox.Show("Đối thủ thắng!", "Kết thúc"); });
+                    StopGame();
+                    MessageBox.Show("Đối thủ thắng!", "Kết thúc");
                     break;
 
                 case (int)SocketCommand.HET_GIO:
-                    this.Invoke(() => { StopGame(); MessageBox.Show("Đối thủ hết giờ — Bạn thắng!", "Kết thúc"); });
+                    StopGame();
+                    MessageBox.Show("Đối thủ hết giờ — Bạn thắng!", "Kết thúc");
                     break;
 
                 case (int)SocketCommand.THOAT_PHONG:
-                    this.Invoke(() => { StopGame(); MessageBox.Show("Đối thủ đã thoát game.", "Thông báo"); });
-                    break;
-
-                default:
-                    Listen();
+                    StopGame();
+                    MessageBox.Show("Đối thủ đã thoát game.", "Thông báo");
                     break;
             }
         }
-
         private void FormGame_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (MessageBox.Show("Thoát khỏi trò chơi?", "Thông báo",

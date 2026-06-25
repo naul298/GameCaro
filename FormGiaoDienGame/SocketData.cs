@@ -40,5 +40,6 @@
         REGISTER = 20,       // Client gửi yêu cầu đăng ký
         REGISTER_OK = 21,    // Server báo thành công
         REGISTER_FAIL = 22,  // Server báo thất bại (trùng username, v.v.)
+        OPPONENT_JOINED = 23
     }
 }

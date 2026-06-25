@@ -225,10 +225,8 @@ public class GameServer
                 var p0 = room.Players[0];
                 var p1 = room.Players[1];
                 // JOIN_OK format: "roomName|playerIndex|myName|opponentName"
-                GuiJson(p0.Socket, SocketCommand.JOIN_OK,
-                    $"{room.Name}|0|{p0.DisplayName}|{p1.DisplayName}");
-                GuiJson(p1.Socket, SocketCommand.JOIN_OK,
-                    $"{room.Name}|1|{p1.DisplayName}|{p0.DisplayName}");
+                GuiJson(p0.Socket, SocketCommand.OPPONENT_JOINED, $"{room.Name}|0|{p0.DisplayName}|{p1.DisplayName}");
+                GuiJson(p1.Socket, SocketCommand.JOIN_OK, $"{room.Name}|1|{p1.DisplayName}|{p0.DisplayName}");
                 Console.WriteLine($"[Phòng] '{room.Name}' bắt đầu game!");
             }
             else

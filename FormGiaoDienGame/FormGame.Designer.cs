@@ -56,7 +56,7 @@
             // 
             pnlBanCo.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             pnlBanCo.AutoSize = true;
-            pnlBanCo.BackColor = Color.White;
+            pnlBanCo.BackColor = SystemColors.GradientInactiveCaption;
             pnlBanCo.BorderStyle = BorderStyle.FixedSingle;
             pnlBanCo.Cursor = Cursors.Hand;
             pnlBanCo.ForeColor = SystemColors.ControlText;
@@ -67,11 +67,11 @@
             // 
             // button1
             // 
-            button1.BackColor = SystemColors.Control;
+            button1.BackColor = Color.Lime;
             button1.Cursor = Cursors.Hand;
             button1.FlatStyle = FlatStyle.Popup;
             button1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button1.ForeColor = SystemColors.ControlText;
+            button1.ForeColor = Color.FromArgb(0, 0, 192);
             button1.ImageAlign = ContentAlignment.MiddleLeft;
             button1.Location = new Point(18, 0);
             button1.Name = "button1";
@@ -82,11 +82,11 @@
             // 
             // button2
             // 
-            button2.BackColor = SystemColors.Control;
+            button2.BackColor = Color.FromArgb(0, 0, 192);
             button2.Cursor = Cursors.Hand;
             button2.FlatStyle = FlatStyle.Popup;
             button2.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button2.ForeColor = SystemColors.ControlText;
+            button2.ForeColor = Color.White;
             button2.ImageAlign = ContentAlignment.MiddleLeft;
             button2.Location = new Point(296, 0);
             button2.Name = "button2";
@@ -97,11 +97,11 @@
             // 
             // button4
             // 
-            button4.BackColor = SystemColors.Control;
+            button4.BackColor = Color.Yellow;
             button4.Cursor = Cursors.Hand;
             button4.FlatStyle = FlatStyle.Popup;
             button4.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button4.ForeColor = SystemColors.ControlText;
+            button4.ForeColor = Color.FromArgb(192, 0, 0);
             button4.ImageAlign = ContentAlignment.MiddleLeft;
             button4.Location = new Point(157, 0);
             button4.Name = "button4";
@@ -112,7 +112,7 @@
             // 
             // pnlButton
             // 
-            pnlButton.BackColor = SystemColors.InactiveCaption;
+            pnlButton.BackColor = SystemColors.GradientInactiveCaption;
             pnlButton.Controls.Add(txtIP);
             pnlButton.Controls.Add(btnLan);
             pnlButton.Controls.Add(lblThoat);
@@ -151,11 +151,11 @@
             // 
             // lblThoat
             // 
-            lblThoat.BackColor = SystemColors.Control;
+            lblThoat.BackColor = Color.FromArgb(192, 0, 0);
             lblThoat.Cursor = Cursors.Hand;
             lblThoat.FlatStyle = FlatStyle.Popup;
             lblThoat.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            lblThoat.ForeColor = SystemColors.ControlText;
+            lblThoat.ForeColor = Color.Yellow;
             lblThoat.ImageAlign = ContentAlignment.MiddleLeft;
             lblThoat.Location = new Point(435, 0);
             lblThoat.Name = "lblThoat";
@@ -192,9 +192,9 @@
             // 
             lblPlayer2.Anchor = AnchorStyles.Left;
             lblPlayer2.AutoSize = true;
-            lblPlayer2.BackColor = SystemColors.Control;
+            lblPlayer2.BackColor = Color.Navy;
             lblPlayer2.Font = new Font("Segoe UI", 12F);
-            lblPlayer2.ForeColor = SystemColors.ActiveCaptionText;
+            lblPlayer2.ForeColor = Color.White;
             lblPlayer2.ImageAlign = ContentAlignment.MiddleLeft;
             lblPlayer2.Location = new Point(402, 33);
             lblPlayer2.Name = "lblPlayer2";
@@ -207,9 +207,9 @@
             // 
             lblPlayer1.Anchor = AnchorStyles.Right;
             lblPlayer1.AutoSize = true;
-            lblPlayer1.BackColor = SystemColors.Control;
+            lblPlayer1.BackColor = Color.Navy;
             lblPlayer1.Font = new Font("Times New Roman", 14.25F, FontStyle.Bold);
-            lblPlayer1.ForeColor = SystemColors.ActiveCaptionText;
+            lblPlayer1.ForeColor = Color.White;
             lblPlayer1.ImageAlign = ContentAlignment.MiddleLeft;
             lblPlayer1.Location = new Point(52, 32);
             lblPlayer1.Name = "lblPlayer1";
@@ -222,7 +222,7 @@
             // 
             lblTysoP1.Anchor = AnchorStyles.Right;
             lblTysoP1.Font = new Font("Segoe UI", 12F);
-            lblTysoP1.ForeColor = Color.FromArgb(255, 107, 107);
+            lblTysoP1.ForeColor = Color.FromArgb(192, 0, 0);
             lblTysoP1.ImageAlign = ContentAlignment.MiddleLeft;
             lblTysoP1.Location = new Point(119, 62);
             lblTysoP1.Name = "lblTysoP1";
@@ -235,7 +235,7 @@
             // 
             lblTysoP2.Anchor = AnchorStyles.Left;
             lblTysoP2.Font = new Font("Segoe UI", 12F);
-            lblTysoP2.ForeColor = Color.FromArgb(91, 141, 239);
+            lblTysoP2.ForeColor = Color.FromArgb(0, 192, 0);
             lblTysoP2.ImageAlign = ContentAlignment.MiddleLeft;
             lblTysoP2.Location = new Point(402, 62);
             lblTysoP2.Name = "lblTysoP2";
@@ -249,7 +249,7 @@
             lblSoPhong.Anchor = AnchorStyles.None;
             lblSoPhong.AutoSize = true;
             lblSoPhong.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            lblSoPhong.ForeColor = SystemColors.ActiveCaptionText;
+            lblSoPhong.ForeColor = Color.Yellow;
             lblSoPhong.ImageAlign = ContentAlignment.MiddleLeft;
             lblSoPhong.Location = new Point(247, 4);
             lblSoPhong.Name = "lblSoPhong";
@@ -260,7 +260,7 @@
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.BackColor = SystemColors.InactiveCaption;
+            tableLayoutPanel1.BackColor = Color.Navy;
             tableLayoutPanel1.ColumnCount = 3;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
@@ -301,7 +301,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.Control;
+            BackColor = SystemColors.GrayText;
             ClientSize = new Size(572, 611);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(pnlButton);
