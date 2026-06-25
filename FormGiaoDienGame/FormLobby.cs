@@ -136,20 +136,10 @@ namespace FormGiaoDienGame
                     string myName = parts[2];
                     string opponentName = parts.Length > 3 ? parts[3] : "";
 
-                    if (string.IsNullOrEmpty(opponentName))
-                    {
-                        // Chỉ 1 mình → hiện thông báo chờ, không mở game
-                        MessageBox.Show($"Đã vào '{roomName}'. Chờ người chơi thứ 2...",
-                            "Đang chờ");
-                        // Tiếp tục lắng nghe — khi đủ 2 sẽ nhận JOIN_OK lần 2
-                    }
-                    else
-                    {
-                        // Đủ 2 người → mở FormGame
-                        var formGame = new FormGame(_socket, myName, playerIndex, opponentName);
-                        formGame.Show();
-                        this.Hide();
-                    }
+                    var formGame = new FormGame(_socket, myName, playerIndex, opponentName, roomName);
+                    formGame.Show();
+                    this.Hide();
+
                     break;
 
                 case SocketCommand.JOIN_FAIL:
