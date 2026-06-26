@@ -63,61 +63,67 @@
         #region Methods
         public void VeBanCo()
         {
+            // Xóa toàn bộ ô cờ cũ trên panel và bật panel
+            banCo.Controls.Clear();
             banCo.Enabled = true;
 
+            // Ma trận 2 chiều: Matrix[hàng][cột] → truy cập từng ô bàn cờ theo tọa độ
             Matrix = new List<List<Button>>();
 
-            Button oldBtn = new Button() { Width = 0, Height = 0, Location = new Point(0, 0) };
-
+            // Vòng lặp hàng (i = 0 → 14, tức 15 hàng)
             for (int i = 0; i < Cons.chieuCaoBanCo; i++)
             {
+                // Thêm 1 hàng mới vào ma trận — mỗi hàng là 1 List<Button>
+                Matrix.Add(new List<Button>());
+
+                // Vòng lặp cột (j = 0 → 19, tức 20 cột)
                 for (int j = 0; j < Cons.chieuRongBanCo; j++)
                 {
-                    banCo.Controls.Clear();
-                    banCo.Enabled = true;
-                    Matrix.Add(new List<Button>());
+                    // Tạo ô cờ tại vị trí (hàng i, cột j)
                     Button btn = new Button()
                     {
-                        Width = Cons.chessWidth, //Đặt chiều rộng của ô bàn cờ
-                        Height = Cons.chessHeight, //Đặt chiều cao của ô bàn cờ
-
-                        //Đặt vị trí của ô bàn cờ dựa trên vị trí và kích thước của ô bàn cờ cũ
-                        Location = new Point(oldBtn.Location.X + oldBtn.Width, oldBtn.Location.Y),
-
-                        //Đặt chế độ hiển thị hình ảnh nền của ô bàn cờ là Stretch để hình ảnh vừa với kích thước của ô bàn cờ
-                        BackgroundImageLayout = ImageLayout.Stretch,
-                        Tag = i.ToString()
+                        Width = Cons.chessWidth,                      // chiều rộng ô (px)
+                        Height = Cons.chessHeight,                     // chiều cao ô (px)
+                        Location = new Point(j * Cons.chessWidth,    // x = cột × rộng
+                                             i * Cons.chessHeight),    // y = hàng × cao
+                        BackgroundImageLayout = ImageLayout.Stretch,   // ảnh quân cờ co giãn vừa ô
+                        Tag = i.ToString()                             // lưu chỉ số hàng để tra tọa độ sau
                     };
 
-                    //Tạo 1 sự kiện: đánh cờ
-                    btn.Click += (sender, e) => //sender: đối tượng gửi sự kiện, e: thông tin sự kiện
+                    // Sự kiện click: xử lý khi người chơi đánh vào ô này
+                    btn.Click += (sender, e) =>
                     {
-                        Button btn = sender as Button; //Ép kiểu sender về Button để lấy thông tin về ô bàn cờ được click
+                        Button clicked = sender as Button; // ô vừa được bấm
 
-                        if (btn.BackgroundImage != null) { return; }
+                        // Ô đã có quân → bỏ qua
+                        if (clicked.BackgroundImage != null) return;
 
-                        btn.BackgroundImage = listPlayers[curPlayer].Chess; //Đặt hình ảnh quân cờ của người chơi hiện tại
+                        // Đặt quân cờ của người chơi hiện tại lên ô
+                        clicked.BackgroundImage = listPlayers[curPlayer].Chess;
 
+                        // Kiểm tra thắng TRƯỚC khi đổi lượt
+                        // → curPlayer lúc này vẫn là người vừa đánh
+                        if (IsEndGame(clicked))
+                        {
+                            // Thông báo tọa độ vừa đánh lên server (để relay cho đối thủ)
+                            playerMark?.Invoke(this, new ButtonClickEvent(LayToaDoChess(clicked)));
+                            isEndGame(); // kết thúc game, hiện thông báo thắng
+                            return;      // dừng, không đổi lượt nữa
+                        }
+
+                        // Chưa thắng → đổi lượt sang người kia
                         DoiNguoiChoi();
 
-                        if (playerMark != null)
-                        {
-                            playerMark(this, new ButtonClickEvent(LayToaDoChess(btn)));
-                        }
-
-                        if (IsEndGame(btn))
-                        {
-                            isEndGame();
-                        }
+                        // Thông báo tọa độ vừa đánh lên server
+                        playerMark?.Invoke(this, new ButtonClickEvent(LayToaDoChess(clicked)));
                     };
 
-                    BanCo.Controls.Add(btn); //Thêm ô bàn cờ vào Panel chứa bàn cờ
+                    // Thêm ô vào panel để hiển thị
+                    banCo.Controls.Add(btn);
+
+                    // Lưu ô vào ma trận tại đúng vị trí Matrix[hàng i][cột j]
                     Matrix[i].Add(btn);
-                    oldBtn = btn; //Gán ô bàn cờ vừa tạo thành ô bàn cờ cũ
                 }
-                oldBtn.Location = new Point(0, oldBtn.Location.Y + Cons.chessHeight);
-                oldBtn.Height = 0;
-                oldBtn.Width = 0;
             }
         }
         public void OtherPlayerMark(Point point)
