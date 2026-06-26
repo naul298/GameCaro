@@ -11,7 +11,6 @@
 
             // Ẩn mật khẩu
             txtMatKhau.PasswordChar = '●';
-            textBox1.PasswordChar = '●'; // ô xác nhận mật khẩu
 
             // Hiển thị server đang kết nối
             lblServer.Text = $"Đang truy cập vào server: {_serverIp}";
@@ -79,16 +78,11 @@
 
                     if (response.Command == (int)SocketCommand.REGISTER_OK)
                     {
-                        MessageBox.Show(
-                            $"Đăng ký thành công!\n" +
+                        MessageBox.Show($"Đăng ký thành công!\n" +
                             $"Tài khoản: {username}\n" +
                             $"Tên hiển thị: {displayName}\n\n" +
-                            $"Bạn có thể đăng nhập ngay bây giờ.",
-                            "Thành công",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                            $"Bạn có thể đăng nhập ngay bây giờ.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        // Đóng FormRegister → FormLogin tự hiện lại
                         this.Close();
                     }
                     else if (response.Command == (int)SocketCommand.REGISTER_FAIL)
@@ -116,20 +110,18 @@
         }
 
         // ── Đóng FormRegister → FormLogin tự show lại ────────────
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            base.OnFormClosed(e);
-
-            var login = Application.OpenForms.OfType<FormLogin>().FirstOrDefault();
-            if (login != null)
-                login.Show();
-            else
-                new FormLogin().Show();
-        }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void FormRegister_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Tìm FormLogin đang bị ẩn và hiện lại — giữ nguyên IP đã nhập
+            var login = Application.OpenForms.OfType<FormLogin>().FirstOrDefault();
+            if (login != null) login.Show();
+            else new FormLogin().Show(); // không tìm thấy → tạo mới
         }
     }
 }

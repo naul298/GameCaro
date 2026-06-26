@@ -249,31 +249,26 @@
         }
         private bool isSecondaryDiagonal(Button btn)
         {
-            // Kiểm tra 5 quân liên tiếp theo đường CHÉO PHỤ (↗ đến ↙) tính từ ô vừa đánh.
-            // Đếm lên phải + xuống trái, tổng đủ 5 thì thắng.
-            Point point = LayToaDoChess(btn);
-            int countTop = 0;
-            // Đếm quân liên tiếp cùng loại theo hướng ↗ (bao gồm ô hiện tại)
-            for (int i = 0; i <= point.X; i++)
+            // Kiểm tra 5 quân liên tiếp theo đường CHÉO PHỤ (↗ đến ↙) tính từ ô vừa đánh
+            Point point = LayToaDoChess(btn); // tọa độ (x=cột, y=hàng) của ô vừa đánh
+
+            int countTop = 0; // số quân liên tiếp cùng loại theo hướng ↗ (lên phải)
+            for (int i = 0; i < Cons.chieuRongBanCo; i++)
             {
-                if (point.X + i > Cons.chieuRongBanCo || point.Y - i < 0) { break; }
-                if (Matrix[point.Y - i][point.X + i].BackgroundImage == btn.BackgroundImage)
-                {
-                    countTop++;
-                }
-                else { break; }
+                if (point.X + i >= Cons.chieuRongBanCo || point.Y - i < 0) break; // ra khỏi biên → dừng
+                if (Matrix[point.Y - i][point.X + i].BackgroundImage == btn.BackgroundImage) countTop++;
+                else break; // gặp ô trống hoặc quân đối thủ → dừng đếm
             }
-            int countBottom = 0;
-            // Đếm quân liên tiếp cùng loại theo hướng ↙ (bắt đầu từ ô kế tiếp)
-            for (int i = 1; i <= Cons.chieuRongBanCo - point.X; i++)
+
+            int countBottom = 0; // số quân liên tiếp cùng loại theo hướng ↙ (xuống trái)
+            for (int i = 1; i < Cons.chieuRongBanCo; i++)
             {
-                if (point.Y + i >= Cons.chieuCaoBanCo || point.X - i < 0) { break; }
-                if (Matrix[point.Y + i][point.X - i].BackgroundImage == btn.BackgroundImage)
-                {
-                    countBottom++;
-                }
-                else { break; }
+                if (point.Y + i >= Cons.chieuCaoBanCo || point.X - i < 0) break; // ra khỏi biên → dừng
+                if (Matrix[point.Y + i][point.X - i].BackgroundImage == btn.BackgroundImage) countBottom++;
+                else break; // gặp ô trống hoặc quân đối thủ → dừng đếm
             }
+
+            // Tổng 2 hướng >= 5 → thắng (countTop đã bao gồm ô hiện tại nên chỉ cần >= 5)
             return countTop + countBottom >= 5;
         }
         private void DoiNguoiChoi()
