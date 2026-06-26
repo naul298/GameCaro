@@ -63,6 +63,8 @@
         #region Methods
         public void VeBanCo()
         {
+            banCo.Controls.Clear();
+
             banCo.Enabled = true;
 
             Matrix = new List<List<Button>>();
@@ -73,8 +75,6 @@
             {
                 for (int j = 0; j < Cons.chieuRongBanCo; j++)
                 {
-                    banCo.Controls.Clear();
-                    banCo.Enabled = true;
                     Matrix.Add(new List<Button>());
                     Button btn = new Button()
                     {
