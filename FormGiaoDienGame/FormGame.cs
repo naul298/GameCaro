@@ -150,18 +150,20 @@ namespace FormGiaoDienGame
         }
         private void FormGame_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (MessageBox.Show("Thoát khỏi trò chơi?", "Thông báo",
-                MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+            if (MessageBox.Show("Thoát khỏi trò chơi?", "Thông báo", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
             {
-                e.Cancel = true;
+                e.Cancel = true; // người dùng bấm Cancel → không thoát
                 return;
             }
+
+            // Báo server biết người chơi đã thoát phòng
             try { _socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point())); }
             catch { }
-        }
 
-        // Designer đã đăng ký 3 handler này — giữ empty để không báo lỗi
-        private void FormGame_Shown(object sender, EventArgs e) { }
+            // Tìm FormLobby đang bị ẩn và hiện lại
+            var lobby = Application.OpenForms.OfType<FormLobby>().FirstOrDefault();
+            if (lobby != null) lobby.Show();
+        }
         private void btnSanSang_Click(object sender, EventArgs e)
         {
             btnSanSang.Enabled = false; // chống bấm 2 lần

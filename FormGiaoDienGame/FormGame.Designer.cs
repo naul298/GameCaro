@@ -277,7 +277,7 @@
             Name = "FormGame";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Caro Online";
-            Shown += FormGame_Shown;
+            FormClosing += FormGame_FormClosing;
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);

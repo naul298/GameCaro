@@ -312,8 +312,6 @@ public class GameServer
         }
     }
 
-    // ── DISCONNECT ───────────────────────────────────────────────
-
     private void OnClientDisconnect(PlayerSession session)
     {
         lock (_lock)
@@ -324,8 +322,6 @@ public class GameServer
         }
         try { session.Socket.Close(); } catch { }
     }
-
-    // ── RELAY ────────────────────────────────────────────────────
 
     private void RelayToOpponent(PlayerSession session, SocketData data)
     {
@@ -342,9 +338,6 @@ public class GameServer
         }
     }
 
-    // ── BROADCAST ────────────────────────────────────────────────
-
-    // Gửi cập nhật 1 phòng cho tất cả client đang ở lobby
     private void BroadcastRoomUpdate(LobbyRoom room)
     {
         string payload = room.ToJson();
@@ -353,15 +346,12 @@ public class GameServer
             catch { }
     }
 
-    // Broadcast lệnh đơn giản (ví dụ: ROOM_DELETED)
     private void BroadcastToLobby(SocketCommand cmd, string message)
     {
         foreach (var client in _clients.Where(c => c.CurrentRoomId < 0))
             try { GuiJson(client.Socket, cmd, message); }
             catch { }
     }
-
-    // ── HELPERS ──────────────────────────────────────────────────
 
     private PlayerSession? XacThucLogin(Socket client, SocketData data)
     {
@@ -388,13 +378,38 @@ public class GameServer
 
     private static SocketData? NhanGoi(Socket client)
     {
-        byte[] buf = new byte[65536];
-        int n = client.Receive(buf);
-        if (n == 0) return null;
-        string json = Encoding.UTF8.GetString(buf, 0, n).Trim('\0');
-        return JsonSerializer.Deserialize<SocketData>(json);
-    }
+        var sb = new StringBuilder(); // tích lũy dữ liệu nhận được từng mảnh
+        byte[] buf = new byte[65536]; // buffer đọc mỗi lần Receive()
 
+        // Đọc liên tục cho đến khi ghép đủ 1 JSON object hoàn chỉnh
+        do
+        {
+            int n = client.Receive(buf); // số byte thực sự nhận được
+            if (n == 0) return null;     // client ngắt kết nối
+            sb.Append(Encoding.UTF8.GetString(buf, 0, n)); // ghép vào chuỗi tích lũy
+        }
+        while (!IsCompleteJson(sb.ToString())); // kiểm tra JSON đã đủ { } chưa
+
+        // Deserialize chuỗi JSON hoàn chỉnh thành SocketData
+        return JsonSerializer.Deserialize<SocketData>(sb.ToString().Trim('\0'));
+    }
+    private static bool IsCompleteJson(string s)
+    {
+        int depth = 0;       // đếm độ sâu lồng nhau của { }
+        bool inString = false; // đang trong chuỗi "" hay không
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            char c = s[i];
+            if (c == '"' && (i == 0 || s[i - 1] != '\\')) inString = !inString; // đổi trạng thái khi gặp " không bị escape
+            if (inString) continue; // bỏ qua { } bên trong chuỗi
+            if (c == '{') depth++;  // mở ngoặc → tăng độ sâu
+            else if (c == '}') depth--; // đóng ngoặc → giảm độ sâu
+        }
+
+        // depth == 0 nghĩa là mọi { đã có } tương ứng → JSON hoàn chỉnh
+        return depth == 0 && s.Contains('{');
+    }
     private static void GuiJson(Socket s, SocketCommand cmd, string message = "")
     {
         string json = JsonSerializer.Serialize(
