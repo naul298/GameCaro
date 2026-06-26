@@ -25,8 +25,7 @@ namespace FormGiaoDienGame
                 // Nếu đang kết nối rồi thì không làm gì
                 if (IsConnected) return true;
 
-                _client = new Socket(AddressFamily.InterNetwork,
-                                     SocketType.Stream, ProtocolType.Tcp);
+                _client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 _client.Connect(new IPEndPoint(IPAddress.Parse(IP), port));
                 return true;
             }

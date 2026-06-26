@@ -9,7 +9,9 @@ namespace ServerGame.Core;
 public class GameServer
 {
     private const int PORT = 12345;
-    private const string CONN_STR = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\Học Tập\Lập Trình Mạng\GameCaro\data\dataCaro.mdf;Integrated Security=True;";
+    private const int DISCOVERY_PORT = 12346; // cổng phụ chỉ dùng để tìm server
+
+    private const string CONN_STR = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Học Tập\Năm 2\CoCaro\CoCaro\data\dataCaro.mdf;Integrated Security=True;";
     // Danh sách tất cả client đang kết nối và tất cả phòng
     private readonly List<PlayerSession> _clients = new();
     private readonly List<LobbyRoom> _rooms = new();
@@ -17,13 +19,13 @@ public class GameServer
 
     public void Start()
     {
-        Console.WriteLine("===== CoCaro Server =====");
-        LoadRoomsFromDb();
+        Console.WriteLine("===== Caro Online =====");
+        LoadRoomsFromDb();   // khởi tạo DB trước
+        BatDauDiscovery();   // mở cổng discovery sau khi DB đã sẵn sàng
 
         var sckServer = TaoServerSocket(PORT);
         Console.WriteLine($"Đang lắng nghe cổng {PORT}...\n");
 
-        // Vòng lặp chính: mỗi client kết nối → tạo thread riêng
         while (true)
         {
             Socket client = sckServer.Accept();
@@ -32,6 +34,37 @@ public class GameServer
             t.IsBackground = true;
             t.Start();
         }
+    }
+    private void BatDauDiscovery()
+    {
+        var t = new Thread(() =>
+        {
+            // Mở socket lắng nghe trên cổng phụ
+            var listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            listener.Bind(new IPEndPoint(IPAddress.Any, DISCOVERY_PORT));
+            listener.Listen(10);
+            Console.WriteLine($"Discovery đang lắng nghe cổng {DISCOVERY_PORT}...");
+
+            while (true)
+            {
+                try
+                {
+                    Socket client = listener.Accept(); // chờ client kết nối vào cổng phụ
+                    byte[] buf = new byte[64];
+                    int n = client.Receive(buf);
+                    string msg = Encoding.UTF8.GetString(buf, 0, n);
+
+                    // Chỉ phản hồi đúng mật khẩu nhận dạng
+                    if (msg == "FIND_SERVER")
+                        client.Send(Encoding.UTF8.GetBytes("CARO_SERVER"));
+
+                    client.Close(); // đóng ngay sau khi trả lời, không giữ kết nối
+                }
+                catch { }
+            }
+        });
+        t.IsBackground = true;
+        t.Start();
     }
     private void XuLyDangKy(Socket socket, SocketData data)
     {
@@ -378,20 +411,23 @@ public class GameServer
 
     private static SocketData? NhanGoi(Socket client)
     {
-        var sb = new StringBuilder(); // tích lũy dữ liệu nhận được từng mảnh
-        byte[] buf = new byte[65536]; // buffer đọc mỗi lần Receive()
-
-        // Đọc liên tục cho đến khi ghép đủ 1 JSON object hoàn chỉnh
-        do
+        try
         {
-            int n = client.Receive(buf); // số byte thực sự nhận được
-            if (n == 0) return null;     // client ngắt kết nối
-            sb.Append(Encoding.UTF8.GetString(buf, 0, n)); // ghép vào chuỗi tích lũy
-        }
-        while (!IsCompleteJson(sb.ToString())); // kiểm tra JSON đã đủ { } chưa
+            var sb = new StringBuilder();
+            byte[] buf = new byte[65536];
 
-        // Deserialize chuỗi JSON hoàn chỉnh thành SocketData
-        return JsonSerializer.Deserialize<SocketData>(sb.ToString().Trim('\0'));
+            do
+            {
+                int n = client.Receive(buf);
+                if (n == 0) return null; // client ngắt kết nối bình thường
+                sb.Append(Encoding.UTF8.GetString(buf, 0, n));
+            }
+            while (!IsCompleteJson(sb.ToString()));
+
+            return JsonSerializer.Deserialize<SocketData>(sb.ToString().Trim('\0'));
+        }
+        catch (SocketException) { return null; } // client tắt đột ngột → trả null để server xử lý disconnect
+        catch (Exception) { return null; }       // các lỗi khác → tương tự
     }
     private static bool IsCompleteJson(string s)
     {
@@ -416,7 +452,6 @@ public class GameServer
             new SocketData((int)cmd, message, new Point(0, 0)));
         s.Send(Encoding.UTF8.GetBytes(json));
     }
-
     private static Socket TaoServerSocket(int port)
     {
         var sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

@@ -33,7 +33,7 @@
             label1 = new Label();
             panel2 = new Panel();
             btnKetNoi = new Button();
-            txtServer = new ComboBox();
+            cboServer = new ComboBox();
             label4 = new Label();
             label3 = new Label();
             label2 = new Label();
@@ -74,7 +74,7 @@
             // 
             panel2.BackColor = SystemColors.GradientInactiveCaption;
             panel2.Controls.Add(btnKetNoi);
-            panel2.Controls.Add(txtServer);
+            panel2.Controls.Add(cboServer);
             panel2.Controls.Add(label4);
             panel2.Controls.Add(label3);
             panel2.Controls.Add(label2);
@@ -99,14 +99,14 @@
             btnKetNoi.UseVisualStyleBackColor = false;
             btnKetNoi.Click += btnKetNoi_Click;
             // 
-            // txtServer
+            // cboServer
             // 
-            txtServer.Font = new Font("Segoe UI", 12F);
-            txtServer.FormattingEnabled = true;
-            txtServer.Location = new Point(20, 166);
-            txtServer.Name = "txtServer";
-            txtServer.Size = new Size(186, 29);
-            txtServer.TabIndex = 3;
+            cboServer.Font = new Font("Segoe UI", 12F);
+            cboServer.FormattingEnabled = true;
+            cboServer.Location = new Point(20, 166);
+            cboServer.Name = "cboServer";
+            cboServer.Size = new Size(186, 29);
+            cboServer.TabIndex = 3;
             // 
             // label4
             // 
@@ -232,7 +232,7 @@
         private Panel panel1;
         private Label label1;
         private Panel panel2;
-        private ComboBox txtServer;
+        private ComboBox cboServer;
         private Button btnDangKi;
         private Button btnDangNhap;
         private Label label4;

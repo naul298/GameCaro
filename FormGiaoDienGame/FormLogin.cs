@@ -1,4 +1,7 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Text;
 
 namespace FormGiaoDienGame
 {
@@ -12,70 +15,90 @@ namespace FormGiaoDienGame
             LoadServerList();
         }
 
-        // Tự động load danh sách IP local vào ComboBox
+        // Load IP máy mình vào cboServer
         private void LoadServerList()
         {
-            txtServer.Items.Clear();
+            cboServer.Items.Clear();
 
             string wifi = socket.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
             string ethernet = socket.GetLocalIPv4(NetworkInterfaceType.Ethernet);
 
-            if (!string.IsNullOrEmpty(wifi)) txtServer.Items.Add(wifi);
-            if (!string.IsNullOrEmpty(ethernet)) txtServer.Items.Add(ethernet);
+            if (!string.IsNullOrEmpty(wifi)) cboServer.Items.Add(wifi);
+            if (!string.IsNullOrEmpty(ethernet)) cboServer.Items.Add(ethernet);
 
-            if (txtServer.Items.Count > 0)
-                txtServer.SelectedIndex = 0;
-
-            lblStatus.ForeColor = SystemColors.ControlDarkDark;
-            lblStatus.Text = "Chọn server để kết nối.";
+            if (cboServer.Items.Count > 0)
+                cboServer.SelectedIndex = 0;
         }
-
-        // Nút kính lúp — tìm kiếm server
-        private void btnKetNoi_Click(object sender, EventArgs e)
+        // Quét LAN dựa trên subnet của các IP đã load
+        private void TimLan(string subnet)
         {
-            string ip = txtServer.Text.Trim();
-
-            if (string.IsNullOrEmpty(ip))
-            {
-                lblStatus.ForeColor = Color.Red;
-                lblStatus.Text = "Vui lòng nhập địa chỉ server.";
-                return;
-            }
-
-            lblStatus.ForeColor = Color.Gray;
-            lblStatus.Text = "Đang tìm server...";
-            btnKetNoi.Enabled = false;
-
             Task.Run(() =>
             {
-                socket = new SocketManager();
-                socket.IP = ip;
-                bool connected = socket.KetNoiServer();
+                var found = new List<string>();
 
-                this.Invoke(() =>
+                var tasks = Enumerable.Range(1, 254).Select(i => Task.Run(() =>
                 {
-                    btnKetNoi.Enabled = true;
-
-                    if (connected)
+                    string ip = subnet + i;
+                    try
                     {
-                        lblStatus.ForeColor = Color.Green;
-                        lblStatus.Text = $"✔ Kết nối thành công: {ip}";
+                        using var s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        bool connected = s.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), 12346)).Wait(500);
+                        if (!connected) return;
 
-                        // Lưu IP vào ComboBox nếu chưa có
-                        if (!txtServer.Items.Contains(ip))
-                            txtServer.Items.Add(ip);
+                        s.Send(Encoding.UTF8.GetBytes("FIND_SERVER"));
+
+                        byte[] buf = new byte[64];
+                        int n = s.Receive(buf);
+
+                        if (Encoding.UTF8.GetString(buf, 0, n) == "CARO_SERVER")
+                            lock (found) { found.Add(ip); }
                     }
-                    else
-                    {
-                        lblStatus.ForeColor = Color.Red;
-                        lblStatus.Text = $"✘ Không tìm thấy server: {ip}";
-                    }
-                });
+                    catch { }
+                })).ToArray();
+
+                Task.WaitAll(tasks, 3000);
+                CapNhatUISauKhiQuet(found);
             });
+        }
+        // Cập nhật UI sau khi quét xong
+        private void CapNhatUISauKhiQuet(List<string> found)
+        {
+            this.Invoke(() =>
+            {
+                if (found.Count > 0)
+                {
+                    foreach (var ip in found)
+                        if (!cboServer.Items.Contains(ip))
+                            cboServer.Items.Add(ip);
+
+                    string serverIp = found[0];
+                    cboServer.Text = serverIp;
+                    socket = new SocketManager { IP = serverIp };
+                    socket.KetNoiServer();
+
+                    lblStatus.ForeColor = Color.Green;
+                    lblStatus.Text = $"Kết nối thành công: {serverIp}";
+                }
+                else
+                {
+                    lblStatus.ForeColor = Color.Red;
+                    lblStatus.Text = $"Không tìm thấy server: {cboServer.Text.Trim()}";
+                }
+            });
+        }
+        // Nút Truy cập — quét LAN theo subnet của IP đang chọn rồi kết nối
+        private void btnKetNoi_Click(object sender, EventArgs e)
+        {
+            string selectedIp = cboServer.Text.Trim();
+            if (string.IsNullOrEmpty(selectedIp)) return;
+
+            // Lấy subnet từ IP đang chọn rồi quét LAN
+            string subnet = selectedIp.Substring(0, selectedIp.LastIndexOf('.') + 1);
+            TimLan(subnet);
         }
         private void btnDangKi_Click(object sender, EventArgs e)
         {
-            var formRegister = new FormRegister(txtServer.Text.Trim());
+            var formRegister = new FormRegister(cboServer.Text.Trim());
             formRegister.Show();
             this.Hide();
         }
