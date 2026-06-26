@@ -275,6 +275,7 @@
             ClientSize = new Size(534, 595);
             Controls.Add(pnlTaoPhong);
             Controls.Add(panel4);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "FormLobby";

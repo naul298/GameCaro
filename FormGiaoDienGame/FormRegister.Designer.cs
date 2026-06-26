@@ -194,6 +194,7 @@
             Controls.Add(panel1);
             Controls.Add(panel2);
             Controls.Add(panel3);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "FormRegister";

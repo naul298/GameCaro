@@ -73,6 +73,8 @@
             {
                 for (int j = 0; j < Cons.chieuRongBanCo; j++)
                 {
+                    banCo.Controls.Clear();
+                    banCo.Enabled = true;
                     Matrix.Add(new List<Button>());
                     Button btn = new Button()
                     {
