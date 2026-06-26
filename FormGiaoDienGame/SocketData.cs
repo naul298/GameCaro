@@ -37,9 +37,11 @@
         JOIN_OK = 17,
         JOIN_FAIL = 18,
         ROOM_DELETED = 19,
-        REGISTER = 20,       // Client gửi yêu cầu đăng ký
-        REGISTER_OK = 21,    // Server báo thành công
-        REGISTER_FAIL = 22,  // Server báo thất bại (trùng username, v.v.)
-        OPPONENT_JOINED = 23
+        REGISTER = 20, 
+        REGISTER_OK = 21,
+        REGISTER_FAIL = 22,
+        OPPONENT_JOINED = 23,
+        READY,
+        START_GAME,
     }
 }

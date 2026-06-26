@@ -34,11 +34,8 @@
             button1 = new Button();
             button2 = new Button();
             button4 = new Button();
-            pnlButton = new Panel();
-            txtIP = new TextBox();
-            btnLan = new Button();
+            btnSanSang = new Button();
             lblThoat = new Button();
-            lblConnect = new Label();
             lblStatus = new Label();
             lblPlayer2 = new Label();
             lblPlayer1 = new Label();
@@ -48,19 +45,17 @@
             tableLayoutPanel1 = new TableLayoutPanel();
             prcbCoolDown = new ProgressBar();
             tmCoolDown = new System.Windows.Forms.Timer(components);
-            pnlButton.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // pnlBanCo
             // 
-            pnlBanCo.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             pnlBanCo.AutoSize = true;
             pnlBanCo.BackColor = SystemColors.GradientInactiveCaption;
             pnlBanCo.BorderStyle = BorderStyle.FixedSingle;
             pnlBanCo.Cursor = Cursors.Hand;
             pnlBanCo.ForeColor = SystemColors.ControlText;
-            pnlBanCo.Location = new Point(0, 90);
+            pnlBanCo.Location = new Point(0, 141);
             pnlBanCo.Name = "pnlBanCo";
             pnlBanCo.Size = new Size(572, 449);
             pnlBanCo.TabIndex = 0;
@@ -73,9 +68,9 @@
             button1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             button1.ForeColor = Color.FromArgb(0, 0, 192);
             button1.ImageAlign = ContentAlignment.MiddleLeft;
-            button1.Location = new Point(18, 0);
+            button1.Location = new Point(12, 91);
             button1.Name = "button1";
-            button1.Size = new Size(120, 35);
+            button1.Size = new Size(120, 44);
             button1.TabIndex = 1;
             button1.Text = "Chơi lại";
             button1.UseVisualStyleBackColor = false;
@@ -88,9 +83,9 @@
             button2.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             button2.ForeColor = Color.White;
             button2.ImageAlign = ContentAlignment.MiddleLeft;
-            button2.Location = new Point(296, 0);
+            button2.Location = new Point(296, 91);
             button2.Name = "button2";
-            button2.Size = new Size(120, 35);
+            button2.Size = new Size(120, 44);
             button2.TabIndex = 2;
             button2.Text = "Đầu hàng";
             button2.UseVisualStyleBackColor = false;
@@ -103,51 +98,27 @@
             button4.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             button4.ForeColor = Color.FromArgb(192, 0, 0);
             button4.ImageAlign = ContentAlignment.MiddleLeft;
-            button4.Location = new Point(157, 0);
+            button4.Location = new Point(154, 91);
             button4.Name = "button4";
-            button4.Size = new Size(120, 35);
+            button4.Size = new Size(120, 44);
             button4.TabIndex = 4;
             button4.Text = "Cầu hoà";
             button4.UseVisualStyleBackColor = false;
             // 
-            // pnlButton
+            // btnSanSang
             // 
-            pnlButton.BackColor = SystemColors.GradientInactiveCaption;
-            pnlButton.Controls.Add(txtIP);
-            pnlButton.Controls.Add(btnLan);
-            pnlButton.Controls.Add(lblThoat);
-            pnlButton.Controls.Add(button4);
-            pnlButton.Controls.Add(button2);
-            pnlButton.Controls.Add(button1);
-            pnlButton.Controls.Add(lblConnect);
-            pnlButton.Dock = DockStyle.Bottom;
-            pnlButton.Location = new Point(0, 538);
-            pnlButton.Name = "pnlButton";
-            pnlButton.Size = new Size(572, 73);
-            pnlButton.TabIndex = 1;
-            // 
-            // txtIP
-            // 
-            txtIP.Font = new Font("Segoe UI", 12F);
-            txtIP.Location = new Point(305, 39);
-            txtIP.Name = "txtIP";
-            txtIP.Size = new Size(100, 29);
-            txtIP.TabIndex = 9;
-            // 
-            // btnLan
-            // 
-            btnLan.BackColor = SystemColors.Control;
-            btnLan.Cursor = Cursors.Hand;
-            btnLan.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            btnLan.ForeColor = SystemColors.ControlText;
-            btnLan.ImageAlign = ContentAlignment.MiddleLeft;
-            btnLan.Location = new Point(42, 35);
-            btnLan.Name = "btnLan";
-            btnLan.Size = new Size(120, 35);
-            btnLan.TabIndex = 8;
-            btnLan.Text = "Kết nối";
-            btnLan.UseVisualStyleBackColor = false;
-            btnLan.Click += btnLan_Click;
+            btnSanSang.BackColor = Color.Lime;
+            btnSanSang.Cursor = Cursors.Hand;
+            btnSanSang.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnSanSang.ForeColor = Color.Navy;
+            btnSanSang.ImageAlign = ContentAlignment.MiddleLeft;
+            btnSanSang.Location = new Point(218, 596);
+            btnSanSang.Name = "btnSanSang";
+            btnSanSang.Size = new Size(137, 54);
+            btnSanSang.TabIndex = 8;
+            btnSanSang.Text = "Sẵn sàng";
+            btnSanSang.UseVisualStyleBackColor = false;
+            btnSanSang.Click += btnSanSang_Click;
             // 
             // lblThoat
             // 
@@ -157,22 +128,12 @@
             lblThoat.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             lblThoat.ForeColor = Color.Yellow;
             lblThoat.ImageAlign = ContentAlignment.MiddleLeft;
-            lblThoat.Location = new Point(435, 0);
+            lblThoat.Location = new Point(438, 91);
             lblThoat.Name = "lblThoat";
-            lblThoat.Size = new Size(120, 35);
+            lblThoat.Size = new Size(120, 44);
             lblThoat.TabIndex = 7;
             lblThoat.Text = "Thoát phòng";
             lblThoat.UseVisualStyleBackColor = false;
-            // 
-            // lblConnect
-            // 
-            lblConnect.AutoSize = true;
-            lblConnect.Font = new Font("Segoe UI", 12F);
-            lblConnect.Location = new Point(446, 47);
-            lblConnect.Name = "lblConnect";
-            lblConnect.Size = new Size(93, 21);
-            lblConnect.TabIndex = 9;
-            lblConnect.Text = "test connect";
             // 
             // lblStatus
             // 
@@ -301,11 +262,15 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.GrayText;
-            ClientSize = new Size(572, 611);
+            BackColor = SystemColors.GradientInactiveCaption;
+            ClientSize = new Size(572, 657);
+            Controls.Add(btnSanSang);
+            Controls.Add(lblThoat);
+            Controls.Add(button2);
             Controls.Add(tableLayoutPanel1);
-            Controls.Add(pnlButton);
             Controls.Add(pnlBanCo);
+            Controls.Add(button4);
+            Controls.Add(button1);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -313,8 +278,6 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Caro Online";
             Shown += FormGame_Shown;
-            pnlButton.ResumeLayout(false);
-            pnlButton.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
@@ -327,7 +290,6 @@
         private Button button1;
         private Button button2;
         private Button button4;
-        private Panel pnlButton;
         private Label lblPlayer2;
         private Label lblPlayer1;
         private Label lblSoPhong;
@@ -338,8 +300,6 @@
         private Button lblThoat;
         private ProgressBar prcbCoolDown;
         private System.Windows.Forms.Timer tmCoolDown;
-        private TextBox txtIP;
-        private Button btnLan;
-        private Label lblConnect;
+        private Button btnSanSang;
     }
 }

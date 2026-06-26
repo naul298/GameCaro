@@ -7,11 +7,7 @@ namespace FormGiaoDienGame
         private int _playerIndex;
         private bool _isWaiting;
 
-        public FormGame(SocketManager socket, string displayName, int playerIndex, string opponentName, string roomName) : this(socket, displayName, playerIndex, opponentName)
-        {
-            lblSoPhong.Text = roomName;
-        }
-        public FormGame(SocketManager socket, string displayName, int playerIndex, string opponentName = "Đối thủ")
+        public FormGame(SocketManager socket, string displayName, int playerIndex, string opponentName, string roomName)
         {
             InitializeComponent();
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -26,6 +22,7 @@ namespace FormGiaoDienGame
             _banCo.EndGame += BanCo_EndGame;
             _banCo.PlayerMark += BanCo_PlayerMark;
 
+            lblSoPhong.Text = roomName;
             prcbCoolDown.Step = Cons.coolDownStep;
             prcbCoolDown.Maximum = Cons.coolDownTime;
             prcbCoolDown.Value = 0;
@@ -33,26 +30,38 @@ namespace FormGiaoDienGame
 
             _banCo.VeBanCo();
 
-            _isWaiting = string.IsNullOrEmpty(opponentName);
-            if (_isWaiting)
-            {
-                pnlBanCo.Enabled = false;
-                lblStatus.Text = "Đang chờ đối thủ vào...";
-                // timer không Start — ngưng
-            }
+            // Khóa tất cả, chờ đủ người
+            pnlBanCo.Enabled = false;
+            btnSanSang.Enabled = false;
+            btnSanSang.Visible = true;
+
+            if (string.IsNullOrEmpty(opponentName))
+                lblStatus.Text = "Đang chờ đối thủ vào phòng...";
             else
-            {
-                BatDauGame();
-            }
+                OnOpponentJoined(opponentName); // vào phòng đã có đủ 2 người
+
             Listen();
         }
-        private void BatDauGame()
+        private void OnOpponentJoined(string opponentName)
         {
-            _isWaiting = false;
-            pnlBanCo.Enabled = (_playerIndex == 0);
-            lblStatus.Text = (_playerIndex == 0) ? "Đến lượt bạn!" : "Chờ đối thủ đánh...";
-            if (_playerIndex == 0) tmCoolDown.Start();
+            // Cập nhật tên đối thủ
+            if (_playerIndex == 0) lblPlayer2.Text = opponentName;
+            else lblPlayer1.Text = opponentName;
+
+            lblStatus.Text = "Đủ 2 người! Bấm Sẵn sàng để bắt đầu.";
+            btnSanSang.Enabled = true;
         }
+        private void BatDauGame(int firstMover)
+        {
+            _banCo.VeBanCo(); // reset bàn cờ nếu chơi lại
+            prcbCoolDown.Value = 0;
+
+            bool myTurn = (_playerIndex == firstMover);
+            pnlBanCo.Enabled = myTurn;
+            lblStatus.Text = myTurn ? "Đến lượt bạn!" : "Chờ đối thủ đánh...";
+            if (myTurn) tmCoolDown.Start();
+        }
+
         private void BanCo_PlayerMark(object? sender, ButtonClickEvent e)
         {
             pnlBanCo.Enabled = false;
@@ -105,17 +114,6 @@ namespace FormGiaoDienGame
         {
             switch (data.Command)
             {
-                case (int)SocketCommand.OPPONENT_JOINED:
-                    // Format message: "roomName|playerIndex|myName|opponentName"
-                    var joinParts = data.Message.Split('|');
-                    string opponentName = joinParts.Length > 3 ? joinParts[3] : "Đối thủ";
-                    string roomName = joinParts.Length > 0 ? joinParts[0] : "";
-
-                    lblSoPhong.Text = roomName;
-                    lblPlayer2.Text = opponentName; // Cập nhật tên đối thủ lên UI
-                    BatDauGame();                   // Mở khóa bàn cờ, bắt đầu timer
-                    break;
-
                 case (int)SocketCommand.SEND_POINT:
                     prcbCoolDown.Value = 0;
                     tmCoolDown.Start();
@@ -133,7 +131,17 @@ namespace FormGiaoDienGame
                     StopGame();
                     MessageBox.Show("Đối thủ hết giờ — Bạn thắng!", "Kết thúc");
                     break;
+                case (int)SocketCommand.OPPONENT_JOINED:
+                    var parts = data.Message.Split('|');
+                    string opponent = parts.Length > 3 ? parts[3] : "Đối thủ";
+                    OnOpponentJoined(opponent);
+                    break;
 
+                case (int)SocketCommand.START_GAME:
+                    int firstMover = int.Parse(data.Message); // 0 hoặc 1
+                    btnSanSang.Visible = false;
+                    BatDauGame(firstMover);
+                    break;
                 case (int)SocketCommand.THOAT_PHONG:
                     StopGame();
                     MessageBox.Show("Đối thủ đã thoát game.", "Thông báo");
@@ -154,6 +162,12 @@ namespace FormGiaoDienGame
 
         // Designer đã đăng ký 3 handler này — giữ empty để không báo lỗi
         private void FormGame_Shown(object sender, EventArgs e) { }
-        private void btnLan_Click(object sender, EventArgs e) { }
+        private void btnSanSang_Click(object sender, EventArgs e)
+        {
+            btnSanSang.Enabled = false; // chống bấm 2 lần
+            btnSanSang.Text = "Đã sẵn sàng";
+            lblStatus.Text = "Đang chờ đối thủ sẵn sàng...";
+            _socket.Send(new SocketData((int)SocketCommand.READY, "", new Point()));
+        }
     }
 }

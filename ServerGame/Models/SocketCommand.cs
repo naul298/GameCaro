@@ -34,5 +34,7 @@ public enum SocketCommand
     REGISTER_FAIL = 22,
 
     //Gameplay
-    OPPONENT_JOINED = 23
+    OPPONENT_JOINED = 23,
+    READY,
+    START_GAME,
 }

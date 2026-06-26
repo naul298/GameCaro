@@ -9,7 +9,7 @@ namespace ServerGame.Core;
 public class GameServer
 {
     private const int PORT = 12345;
-    private const string CONN_STR = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Học Tập\Năm 2\CoCaro\CoCaro\data\dataCaro.mdf;Integrated Security=True;";
+    private const string CONN_STR = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\Học Tập\Lập Trình Mạng\GameCaro\data\dataCaro.mdf;Integrated Security=True;";
     // Danh sách tất cả client đang kết nối và tất cả phòng
     private readonly List<PlayerSession> _clients = new();
     private readonly List<LobbyRoom> _rooms = new();
@@ -130,8 +130,9 @@ public class GameServer
             case SocketCommand.LEAVE_ROOM:
                 RoiPhong(session);
                 break;
-
-            // Relay lệnh game sang đối thủ trong cùng phòng
+            case SocketCommand.READY:
+                XuLyReady(session);
+                break;
             case SocketCommand.SEND_POINT:
             case SocketCommand.END:
             case SocketCommand.HET_GIO:
@@ -144,8 +145,28 @@ public class GameServer
         }
     }
 
-    // ── LOBBY HANDLERS ──────────────────────────────────────────
+    private void XuLyReady(PlayerSession session)
+    {
+        lock (_lock)
+        {
+            var room = _rooms.FirstOrDefault(r => r.Id == session.CurrentRoomId);
+            if (room == null) return;
 
+            room.SetReady(session);
+            Console.WriteLine($"[Ready] {session.DisplayName} đã sẵn sàng.");
+
+            if (room.BothReady())
+            {
+                room.ResetReady();
+                int firstMover = room.NextFirstMover();
+
+                Console.WriteLine($"[Game] Bắt đầu! Người đi trước: index {firstMover}");
+
+                foreach (var p in room.Players)
+                    GuiJson(p.Socket, SocketCommand.START_GAME, firstMover.ToString());
+            }
+        }
+    }
     private void GuiDanhSachPhong(PlayerSession session)
     {
         lock (_lock)
