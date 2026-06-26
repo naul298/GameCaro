@@ -220,43 +220,53 @@ public class GameServer
     {
         lock (_lock)
         {
+            // Tìm phòng theo ID trong danh sách phòng đang có
             var room = _rooms.FirstOrDefault(r => r.Id == roomId);
+
+            // Phòng không tồn tại → báo lỗi cho client
             if (room == null)
             {
                 GuiJson(session.Socket, SocketCommand.JOIN_FAIL, "Phòng không tồn tại.");
                 return;
             }
+
+            // Phòng đã đủ 2 người → không cho vào
             if (room.IsFull)
             {
                 GuiJson(session.Socket, SocketCommand.JOIN_FAIL, "Phòng đã đầy.");
                 return;
             }
 
+            // Thêm người chơi mới vào phòng
             room.Players.Add(session);
             session.CurrentRoomId = roomId;
-            session.Index = room.Players.Count - 1; // 0 hoặc 1
+            session.Index = room.Players.Count - 1; // 0 = host, 1 = guest
 
-            DatabaseHelper.UpdateRoom(CONN_STR, roomId,
-                room.HostId, room.PlayerCount,
-                room.IsFull ? "Playing" : "Waiting");
+            // Cập nhật DB: số người, trạng thái phòng
+            DatabaseHelper.UpdateRoom(CONN_STR, roomId, room.HostId, room.PlayerCount, room.IsFull ? "Playing" : "Waiting");
 
-            // Nếu đủ 2 người → thông báo cả 2 bắt đầu game
             if (room.IsFull)
             {
-                var p0 = room.Players[0];
-                var p1 = room.Players[1];
-                // JOIN_OK format: "roomName|playerIndex|myName|opponentName"
-                GuiJson(p0.Socket, SocketCommand.OPPONENT_JOINED, $"{room.Name}|0|{p0.DisplayName}|{p1.DisplayName}");
+                // Đủ 2 người → gửi JOIN_OK cho CẢ HAI
+                // Format: "tênPhòng|playerIndex|tênMình|tênĐốiThủ"
+                var p0 = room.Players[0]; // host
+                var p1 = room.Players[1]; // guest
+
+                // Gửi cho host (p0): index=0, đối thủ là p1
+                GuiJson(p0.Socket, SocketCommand.JOIN_OK, $"{room.Name}|0|{p0.DisplayName}|{p1.DisplayName}");
+
+                // Gửi cho guest (p1): index=1, đối thủ là p0
                 GuiJson(p1.Socket, SocketCommand.JOIN_OK, $"{room.Name}|1|{p1.DisplayName}|{p0.DisplayName}");
-                Console.WriteLine($"[Phòng] '{room.Name}' bắt đầu game!");
+
+                Console.WriteLine($"[Phòng] '{room.Name}': {p0.DisplayName} vs {p1.DisplayName} — bắt đầu!");
             }
             else
             {
-                // Chỉ 1 người → vào chờ
-                GuiJson(session.Socket, SocketCommand.JOIN_OK,
-                    $"{room.Name}|0|{session.DisplayName}|");
+                // Chỉ 1 người (host vừa tạo phòng) → vào chờ với index=0
+                GuiJson(session.Socket, SocketCommand.JOIN_OK, $"{room.Name}|0|{session.DisplayName}|");
             }
 
+            // Broadcast cập nhật danh sách phòng cho tất cả người đang ở lobby
             BroadcastRoomUpdate(room);
         }
     }
