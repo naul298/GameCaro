@@ -11,8 +11,7 @@ public class GameServer
     private const int PORT = 12345;
     private const int DISCOVERY_PORT = 12346; // cổng phụ chỉ dùng để tìm server
 
-    private const string CONN_STR = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Học Tập\Năm 2\CoCaro\CoCaro\data\dataCaro.mdf;Integrated Security=True;";
-    // Danh sách tất cả client đang kết nối và tất cả phòng
+    private static readonly string CONN_STR = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={AppDomain.CurrentDomain.BaseDirectory}data\dataCaro.mdf;Integrated Security=True;";    // Danh sách tất cả client đang kết nối và tất cả phòng
     private readonly List<PlayerSession> _clients = new();
     private readonly List<LobbyRoom> _rooms = new();
     private readonly object _lock = new(); // Lock cho thread-safe

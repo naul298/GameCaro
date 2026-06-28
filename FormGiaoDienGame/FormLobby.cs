@@ -103,14 +103,15 @@ namespace FormGiaoDienGame
         {
             switch ((SocketCommand)data.Command)
             {
+                // ── Danh sách phòng ─────────────────────────────────────
                 case SocketCommand.ROOMS_LIST:
-                    // Nhận toàn bộ danh sách lần đầu
+                    // Nhận toàn bộ danh sách lần đầu khi vào lobby
                     _rooms = JsonSerializer.Deserialize<List<RoomInfo>>(data.Message) ?? new List<RoomInfo>();
                     HienThiPhong(_rooms);
                     break;
 
                 case SocketCommand.ROOM_UPDATE:
-                    // Cập nhật 1 phòng
+                    // Cập nhật 1 phòng — thêm mới nếu chưa có, sửa nếu đã có
                     var updated = JsonSerializer.Deserialize<RoomInfo>(data.Message);
                     if (updated != null)
                     {
@@ -122,14 +123,15 @@ namespace FormGiaoDienGame
                     break;
 
                 case SocketCommand.ROOM_DELETED:
-                    // Xóa phòng khỏi danh sách
+                    // Xóa phòng khỏi danh sách khi phòng bị giải thể
                     int deletedId = int.Parse(data.Message);
                     _rooms.RemoveAll(r => r.Id == deletedId);
                     HienThiPhong(_rooms);
                     break;
 
+                // ── Vào phòng ───────────────────────────────────────────
                 case SocketCommand.JOIN_OK:
-                    // Vào phòng thành công → mở FormGame
+                    // Format: "tênPhòng|index|tênMình|tênĐốiThủ"
                     var parts = data.Message.Split('|');
                     string roomName = parts[0];
                     int playerIndex = int.Parse(parts[1]);
@@ -139,7 +141,6 @@ namespace FormGiaoDienGame
                     var formGame = new FormGame(_socket, myName, playerIndex, opponentName, roomName);
                     formGame.Show();
                     this.Hide();
-
                     break;
 
                 case SocketCommand.JOIN_FAIL:
