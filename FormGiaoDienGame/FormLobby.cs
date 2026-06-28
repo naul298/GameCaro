@@ -216,5 +216,11 @@ namespace FormGiaoDienGame
                 tenPhong,
                 new Point()));
         }
+
+        private void FormLobby_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try { _socket.Send(new SocketData((int)SocketCommand.LEAVE_ROOM, "", new Point())); }
+            catch { }
+        }
     }
 }

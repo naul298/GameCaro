@@ -132,16 +132,8 @@
         {
             Button btn = Matrix[point.Y][point.X];
             if (btn.BackgroundImage != null) return;
-
             btn.BackgroundImage = listPlayers[curPlayer].Chess;
-
-            // Kiểm tra thắng TRƯỚC — fix bug số 1
-            if (IsEndGame(btn))
-            {
-                isEndGame();
-                return; // không đổi lượt nữa
-            }
-
+            if (IsEndGame(btn)) { isEndGame(); return; }
             DoiNguoiChoi();
         }
 

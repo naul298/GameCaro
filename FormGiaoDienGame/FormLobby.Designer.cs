@@ -63,8 +63,9 @@
             panel4.Controls.Add(btnVaoPhong);
             panel4.Dock = DockStyle.Top;
             panel4.Location = new Point(0, 0);
+            panel4.Margin = new Padding(4, 5, 4, 5);
             panel4.Name = "panel4";
-            panel4.Size = new Size(534, 491);
+            panel4.Size = new Size(763, 818);
             panel4.TabIndex = 2;
             // 
             // btnLamMoi
@@ -74,9 +75,10 @@
             btnLamMoi.FlatStyle = FlatStyle.Popup;
             btnLamMoi.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnLamMoi.ForeColor = Color.Navy;
-            btnLamMoi.Location = new Point(78, 434);
+            btnLamMoi.Location = new Point(111, 723);
+            btnLamMoi.Margin = new Padding(4, 5, 4, 5);
             btnLamMoi.Name = "btnLamMoi";
-            btnLamMoi.Size = new Size(110, 40);
+            btnLamMoi.Size = new Size(157, 67);
             btnLamMoi.TabIndex = 9;
             btnLamMoi.Text = "Làm mới";
             btnLamMoi.UseVisualStyleBackColor = false;
@@ -88,9 +90,10 @@
             btnTaoPhong.FlatStyle = FlatStyle.Popup;
             btnTaoPhong.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             btnTaoPhong.ForeColor = SystemColors.Window;
-            btnTaoPhong.Location = new Point(245, 434);
+            btnTaoPhong.Location = new Point(350, 723);
+            btnTaoPhong.Margin = new Padding(4, 5, 4, 5);
             btnTaoPhong.Name = "btnTaoPhong";
-            btnTaoPhong.Size = new Size(110, 40);
+            btnTaoPhong.Size = new Size(157, 67);
             btnTaoPhong.TabIndex = 4;
             btnTaoPhong.Text = "Tạo phòng";
             btnTaoPhong.UseVisualStyleBackColor = false;
@@ -121,20 +124,23 @@
             dgvLobby.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvLobby.Columns.AddRange(new DataGridViewColumn[] { colId, colName, colHost, colPlayers, colStatus });
             dgvLobby.EnableHeadersVisualStyles = false;
-            dgvLobby.Location = new Point(12, 50);
+            dgvLobby.Location = new Point(17, 83);
+            dgvLobby.Margin = new Padding(4, 5, 4, 5);
             dgvLobby.MultiSelect = false;
             dgvLobby.Name = "dgvLobby";
             dgvLobby.ReadOnly = true;
             dgvLobby.RowHeadersVisible = false;
+            dgvLobby.RowHeadersWidth = 62;
             dgvLobby.RowTemplate.Height = 35;
             dgvLobby.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvLobby.Size = new Size(510, 367);
+            dgvLobby.Size = new Size(729, 612);
             dgvLobby.TabIndex = 5;
             // 
             // colId
             // 
             colId.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             colId.HeaderText = "ID";
+            colId.MinimumWidth = 8;
             colId.Name = "colId";
             colId.ReadOnly = true;
             colId.Visible = false;
@@ -143,6 +149,7 @@
             // 
             colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             colName.HeaderText = "Tên phòng";
+            colName.MinimumWidth = 8;
             colName.Name = "colName";
             colName.ReadOnly = true;
             colName.Visible = false;
@@ -151,6 +158,7 @@
             // 
             colHost.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             colHost.HeaderText = "Chủ phòng";
+            colHost.MinimumWidth = 8;
             colHost.Name = "colHost";
             colHost.ReadOnly = true;
             colHost.Visible = false;
@@ -159,6 +167,7 @@
             // 
             colPlayers.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             colPlayers.HeaderText = "Người chơi";
+            colPlayers.MinimumWidth = 8;
             colPlayers.Name = "colPlayers";
             colPlayers.ReadOnly = true;
             colPlayers.Visible = false;
@@ -167,6 +176,7 @@
             // 
             colStatus.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             colStatus.HeaderText = "Trạng thái";
+            colStatus.MinimumWidth = 8;
             colStatus.Name = "colStatus";
             colStatus.ReadOnly = true;
             colStatus.Visible = false;
@@ -175,9 +185,10 @@
             // 
             lblUserName.AutoSize = true;
             lblUserName.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            lblUserName.Location = new Point(12, 19);
+            lblUserName.Location = new Point(17, 32);
+            lblUserName.Margin = new Padding(4, 0, 4, 0);
             lblUserName.Name = "lblUserName";
-            lblUserName.Size = new Size(70, 21);
+            lblUserName.Size = new Size(106, 32);
             lblUserName.TabIndex = 0;
             lblUserName.Text = "xin chào";
             // 
@@ -187,9 +198,10 @@
             btnDangXuat.FlatStyle = FlatStyle.Popup;
             btnDangXuat.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             btnDangXuat.ForeColor = Color.White;
-            btnDangXuat.Location = new Point(426, 11);
+            btnDangXuat.Location = new Point(609, 18);
+            btnDangXuat.Margin = new Padding(4, 5, 4, 5);
             btnDangXuat.Name = "btnDangXuat";
-            btnDangXuat.Size = new Size(96, 29);
+            btnDangXuat.Size = new Size(137, 48);
             btnDangXuat.TabIndex = 1;
             btnDangXuat.Text = "Đăng xuất";
             btnDangXuat.UseVisualStyleBackColor = false;
@@ -201,9 +213,10 @@
             btnVaoPhong.FlatStyle = FlatStyle.Popup;
             btnVaoPhong.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             btnVaoPhong.ForeColor = Color.White;
-            btnVaoPhong.Location = new Point(412, 434);
+            btnVaoPhong.Location = new Point(589, 723);
+            btnVaoPhong.Margin = new Padding(4, 5, 4, 5);
             btnVaoPhong.Name = "btnVaoPhong";
-            btnVaoPhong.Size = new Size(110, 40);
+            btnVaoPhong.Size = new Size(157, 67);
             btnVaoPhong.TabIndex = 2;
             btnVaoPhong.Text = "Vào phòng";
             btnVaoPhong.UseVisualStyleBackColor = false;
@@ -212,9 +225,10 @@
             // txtTenPhong
             // 
             txtTenPhong.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            txtTenPhong.Location = new Point(12, 33);
+            txtTenPhong.Location = new Point(17, 55);
+            txtTenPhong.Margin = new Padding(4, 5, 4, 5);
             txtTenPhong.Name = "txtTenPhong";
-            txtTenPhong.Size = new Size(185, 29);
+            txtTenPhong.Size = new Size(263, 39);
             txtTenPhong.TabIndex = 3;
             // 
             // btnTao
@@ -223,9 +237,10 @@
             btnTao.FlatStyle = FlatStyle.Popup;
             btnTao.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             btnTao.ForeColor = Color.Navy;
-            btnTao.Location = new Point(281, 22);
+            btnTao.Location = new Point(401, 37);
+            btnTao.Margin = new Padding(4, 5, 4, 5);
             btnTao.Name = "btnTao";
-            btnTao.Size = new Size(110, 40);
+            btnTao.Size = new Size(157, 67);
             btnTao.TabIndex = 4;
             btnTao.Text = "Xác nhận";
             btnTao.UseVisualStyleBackColor = false;
@@ -237,9 +252,10 @@
             btnHuy.FlatStyle = FlatStyle.Popup;
             btnHuy.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             btnHuy.ForeColor = Color.White;
-            btnHuy.Location = new Point(412, 22);
+            btnHuy.Location = new Point(589, 37);
+            btnHuy.Margin = new Padding(4, 5, 4, 5);
             btnHuy.Name = "btnHuy";
-            btnHuy.Size = new Size(110, 40);
+            btnHuy.Size = new Size(157, 67);
             btnHuy.TabIndex = 5;
             btnHuy.Text = "Huỷ";
             btnHuy.UseVisualStyleBackColor = false;
@@ -252,35 +268,39 @@
             pnlTaoPhong.Controls.Add(btnTao);
             pnlTaoPhong.Controls.Add(txtTenPhong);
             pnlTaoPhong.Dock = DockStyle.Bottom;
-            pnlTaoPhong.Location = new Point(0, 510);
+            pnlTaoPhong.Location = new Point(0, 850);
+            pnlTaoPhong.Margin = new Padding(4, 5, 4, 5);
             pnlTaoPhong.Name = "pnlTaoPhong";
-            pnlTaoPhong.Size = new Size(534, 85);
+            pnlTaoPhong.Size = new Size(763, 142);
             pnlTaoPhong.TabIndex = 6;
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            label1.Location = new Point(12, 4);
+            label1.Location = new Point(17, 7);
+            label1.Margin = new Padding(4, 0, 4, 0);
             label1.Name = "label1";
-            label1.Size = new Size(89, 21);
+            label1.Size = new Size(135, 32);
             label1.TabIndex = 6;
             label1.Text = "Tên phòng:";
             // 
             // FormLobby
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientInactiveCaption;
-            ClientSize = new Size(534, 595);
+            ClientSize = new Size(763, 992);
             Controls.Add(pnlTaoPhong);
             Controls.Add(panel4);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(4, 5, 4, 5);
             MaximizeBox = false;
             Name = "FormLobby";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Caro Online";
+            FormClosing += FormLobby_FormClosing;
             panel4.ResumeLayout(false);
             panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvLobby).EndInit();
