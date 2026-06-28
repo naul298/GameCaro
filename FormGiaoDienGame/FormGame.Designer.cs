@@ -32,7 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormGame));
             pnlBanCo = new Panel();
             button1 = new Button();
-            button2 = new Button();
+            btnDauHang = new Button();
             button4 = new Button();
             btnSanSang = new Button();
             lblThoat = new Button();
@@ -55,9 +55,10 @@
             pnlBanCo.BorderStyle = BorderStyle.FixedSingle;
             pnlBanCo.Cursor = Cursors.Hand;
             pnlBanCo.ForeColor = SystemColors.ControlText;
-            pnlBanCo.Location = new Point(0, 141);
+            pnlBanCo.Location = new Point(0, 235);
+            pnlBanCo.Margin = new Padding(4, 5, 4, 5);
             pnlBanCo.Name = "pnlBanCo";
-            pnlBanCo.Size = new Size(572, 449);
+            pnlBanCo.Size = new Size(816, 747);
             pnlBanCo.TabIndex = 0;
             // 
             // button1
@@ -68,27 +69,30 @@
             button1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             button1.ForeColor = Color.FromArgb(0, 0, 192);
             button1.ImageAlign = ContentAlignment.MiddleLeft;
-            button1.Location = new Point(12, 91);
+            button1.Location = new Point(17, 152);
+            button1.Margin = new Padding(4, 5, 4, 5);
             button1.Name = "button1";
-            button1.Size = new Size(120, 44);
+            button1.Size = new Size(171, 73);
             button1.TabIndex = 1;
             button1.Text = "Chơi lại";
             button1.UseVisualStyleBackColor = false;
             // 
-            // button2
+            // btnDauHang
             // 
-            button2.BackColor = Color.FromArgb(0, 0, 192);
-            button2.Cursor = Cursors.Hand;
-            button2.FlatStyle = FlatStyle.Popup;
-            button2.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button2.ForeColor = Color.White;
-            button2.ImageAlign = ContentAlignment.MiddleLeft;
-            button2.Location = new Point(296, 91);
-            button2.Name = "button2";
-            button2.Size = new Size(120, 44);
-            button2.TabIndex = 2;
-            button2.Text = "Đầu hàng";
-            button2.UseVisualStyleBackColor = false;
+            btnDauHang.BackColor = Color.FromArgb(0, 0, 192);
+            btnDauHang.Cursor = Cursors.Hand;
+            btnDauHang.FlatStyle = FlatStyle.Popup;
+            btnDauHang.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnDauHang.ForeColor = Color.White;
+            btnDauHang.ImageAlign = ContentAlignment.MiddleLeft;
+            btnDauHang.Location = new Point(423, 152);
+            btnDauHang.Margin = new Padding(4, 5, 4, 5);
+            btnDauHang.Name = "btnDauHang";
+            btnDauHang.Size = new Size(171, 73);
+            btnDauHang.TabIndex = 2;
+            btnDauHang.Text = "Đầu hàng";
+            btnDauHang.UseVisualStyleBackColor = false;
+            btnDauHang.Click += btnDauHang_Click;
             // 
             // button4
             // 
@@ -98,9 +102,10 @@
             button4.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             button4.ForeColor = Color.FromArgb(192, 0, 0);
             button4.ImageAlign = ContentAlignment.MiddleLeft;
-            button4.Location = new Point(154, 91);
+            button4.Location = new Point(220, 152);
+            button4.Margin = new Padding(4, 5, 4, 5);
             button4.Name = "button4";
-            button4.Size = new Size(120, 44);
+            button4.Size = new Size(171, 73);
             button4.TabIndex = 4;
             button4.Text = "Cầu hoà";
             button4.UseVisualStyleBackColor = false;
@@ -112,9 +117,10 @@
             btnSanSang.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             btnSanSang.ForeColor = Color.Navy;
             btnSanSang.ImageAlign = ContentAlignment.MiddleLeft;
-            btnSanSang.Location = new Point(218, 596);
+            btnSanSang.Location = new Point(311, 993);
+            btnSanSang.Margin = new Padding(4, 5, 4, 5);
             btnSanSang.Name = "btnSanSang";
-            btnSanSang.Size = new Size(137, 54);
+            btnSanSang.Size = new Size(196, 90);
             btnSanSang.TabIndex = 8;
             btnSanSang.Text = "Sẵn sàng";
             btnSanSang.UseVisualStyleBackColor = false;
@@ -128,9 +134,10 @@
             lblThoat.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
             lblThoat.ForeColor = Color.Yellow;
             lblThoat.ImageAlign = ContentAlignment.MiddleLeft;
-            lblThoat.Location = new Point(438, 91);
+            lblThoat.Location = new Point(626, 152);
+            lblThoat.Margin = new Padding(4, 5, 4, 5);
             lblThoat.Name = "lblThoat";
-            lblThoat.Size = new Size(120, 44);
+            lblThoat.Size = new Size(171, 73);
             lblThoat.TabIndex = 7;
             lblThoat.Text = "Thoát phòng";
             lblThoat.UseVisualStyleBackColor = false;
@@ -142,9 +149,10 @@
             lblStatus.BackColor = SystemColors.Control;
             lblStatus.Font = new Font("Calibri", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
             lblStatus.ForeColor = Color.Gray;
-            lblStatus.Location = new Point(260, 62);
+            lblStatus.Location = new Point(371, 105);
+            lblStatus.Margin = new Padding(4, 0, 4, 0);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(49, 19);
+            lblStatus.Size = new Size(73, 29);
             lblStatus.TabIndex = 6;
             lblStatus.Text = "status";
             lblStatus.TextAlign = ContentAlignment.MiddleCenter;
@@ -157,9 +165,10 @@
             lblPlayer2.Font = new Font("Segoe UI", 12F);
             lblPlayer2.ForeColor = Color.White;
             lblPlayer2.ImageAlign = ContentAlignment.MiddleLeft;
-            lblPlayer2.Location = new Point(402, 33);
+            lblPlayer2.Location = new Point(575, 57);
+            lblPlayer2.Margin = new Padding(4, 0, 4, 0);
             lblPlayer2.Name = "lblPlayer2";
-            lblPlayer2.Size = new Size(101, 21);
+            lblPlayer2.Size = new Size(152, 32);
             lblPlayer2.TabIndex = 2;
             lblPlayer2.Text = "Người chơi 2";
             lblPlayer2.TextAlign = ContentAlignment.MiddleCenter;
@@ -172,9 +181,10 @@
             lblPlayer1.Font = new Font("Times New Roman", 14.25F, FontStyle.Bold);
             lblPlayer1.ForeColor = Color.White;
             lblPlayer1.ImageAlign = ContentAlignment.MiddleLeft;
-            lblPlayer1.Location = new Point(52, 32);
+            lblPlayer1.Location = new Point(68, 57);
+            lblPlayer1.Margin = new Padding(4, 0, 4, 0);
             lblPlayer1.Name = "lblPlayer1";
-            lblPlayer1.Size = new Size(116, 22);
+            lblPlayer1.Size = new Size(173, 32);
             lblPlayer1.TabIndex = 3;
             lblPlayer1.Text = "Người chơi 1";
             lblPlayer1.TextAlign = ContentAlignment.MiddleCenter;
@@ -185,9 +195,10 @@
             lblTysoP1.Font = new Font("Segoe UI", 12F);
             lblTysoP1.ForeColor = Color.FromArgb(192, 0, 0);
             lblTysoP1.ImageAlign = ContentAlignment.MiddleLeft;
-            lblTysoP1.Location = new Point(119, 62);
+            lblTysoP1.Location = new Point(171, 103);
+            lblTysoP1.Margin = new Padding(4, 0, 4, 0);
             lblTysoP1.Name = "lblTysoP1";
-            lblTysoP1.Size = new Size(49, 19);
+            lblTysoP1.Size = new Size(70, 32);
             lblTysoP1.TabIndex = 7;
             lblTysoP1.Text = "label2";
             lblTysoP1.TextAlign = ContentAlignment.MiddleCenter;
@@ -198,9 +209,10 @@
             lblTysoP2.Font = new Font("Segoe UI", 12F);
             lblTysoP2.ForeColor = Color.FromArgb(0, 192, 0);
             lblTysoP2.ImageAlign = ContentAlignment.MiddleLeft;
-            lblTysoP2.Location = new Point(402, 62);
+            lblTysoP2.Location = new Point(575, 103);
+            lblTysoP2.Margin = new Padding(4, 0, 4, 0);
             lblTysoP2.Name = "lblTysoP2";
-            lblTysoP2.Size = new Size(49, 19);
+            lblTysoP2.Size = new Size(70, 32);
             lblTysoP2.TabIndex = 6;
             lblTysoP2.Text = "label2";
             lblTysoP2.TextAlign = ContentAlignment.MiddleCenter;
@@ -212,9 +224,10 @@
             lblSoPhong.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
             lblSoPhong.ForeColor = Color.Yellow;
             lblSoPhong.ImageAlign = ContentAlignment.MiddleLeft;
-            lblSoPhong.Location = new Point(247, 4);
+            lblSoPhong.Location = new Point(350, 8);
+            lblSoPhong.Margin = new Padding(4, 0, 4, 0);
             lblSoPhong.Name = "lblSoPhong";
-            lblSoPhong.Size = new Size(76, 21);
+            lblSoPhong.Size = new Size(115, 32);
             lblSoPhong.TabIndex = 4;
             lblSoPhong.Text = "Số phòng";
             lblSoPhong.TextAlign = ContentAlignment.MiddleCenter;
@@ -235,12 +248,13 @@
             tableLayoutPanel1.Controls.Add(prcbCoolDown, 1, 1);
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 0);
+            tableLayoutPanel1.Margin = new Padding(4, 5, 4, 5);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 29F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 27F));
-            tableLayoutPanel1.Size = new Size(572, 85);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
+            tableLayoutPanel1.Size = new Size(817, 142);
             tableLayoutPanel1.TabIndex = 8;
             // 
             // prcbCoolDown
@@ -248,9 +262,10 @@
             prcbCoolDown.Anchor = AnchorStyles.None;
             prcbCoolDown.BackColor = SystemColors.Control;
             prcbCoolDown.ForeColor = Color.FromArgb(102, 187, 106);
-            prcbCoolDown.Location = new Point(193, 32);
+            prcbCoolDown.Location = new Point(277, 54);
+            prcbCoolDown.Margin = new Padding(4, 5, 4, 5);
             prcbCoolDown.Name = "prcbCoolDown";
-            prcbCoolDown.Size = new Size(183, 23);
+            prcbCoolDown.Size = new Size(261, 38);
             prcbCoolDown.Style = ProgressBarStyle.Continuous;
             prcbCoolDown.TabIndex = 8;
             // 
@@ -260,19 +275,20 @@
             // 
             // FormGame
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientInactiveCaption;
-            ClientSize = new Size(572, 657);
+            ClientSize = new Size(817, 1095);
             Controls.Add(btnSanSang);
             Controls.Add(lblThoat);
-            Controls.Add(button2);
+            Controls.Add(btnDauHang);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(pnlBanCo);
             Controls.Add(button4);
             Controls.Add(button1);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(4, 5, 4, 5);
             MaximizeBox = false;
             Name = "FormGame";
             StartPosition = FormStartPosition.CenterScreen;
@@ -288,7 +304,7 @@
 
         private Panel pnlBanCo;
         private Button button1;
-        private Button button2;
+        private Button btnDauHang;
         private Button button4;
         private Label lblPlayer2;
         private Label lblPlayer1;

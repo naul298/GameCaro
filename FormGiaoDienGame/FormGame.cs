@@ -171,5 +171,16 @@ namespace FormGiaoDienGame
             lblStatus.Text = "Đang chờ đối thủ sẵn sàng...";
             _socket.Send(new SocketData((int)SocketCommand.READY, "", new Point()));
         }
+
+        private void btnDauHang_Click(object sender, EventArgs e)
+        {
+            var confirm = MessageBox.Show("Bạn có chắc muốn đầu hàng không?\nĐối thủ sẽ thắng ván này.", "Xác nhận đầu hàng", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (confirm != DialogResult.Yes) return;
+
+            StopGame();
+            lblStatus.Text = "Bạn đã đầu hàng.";
+            _socket.Send(new SocketData((int)SocketCommand.DAU_HANG, "", new Point()));
+        }
     }
 }
