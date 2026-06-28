@@ -10,6 +10,8 @@
         private List<Player> listPlayers; //List chứa danh sách người chơi
         private List<List<Button>> matrix;
         private int curPlayer; //Biến lưu trữ người chơi hiện tại (0 hoặc 1)
+        public string WinnerName { get; private set; } = "";
+
 
         public Panel BanCo { get => banCo; set => banCo = value; }
         public int CurPlayer { get => curPlayer; set => curPlayer = value; }
@@ -128,29 +130,25 @@
         }
         public void OtherPlayerMark(Point point)
         {
+            Button btn = Matrix[point.Y][point.X];
+            if (btn.BackgroundImage != null) return;
 
-            Button btn = Matrix[point.Y][point.X]; //Ép kiểu sender về Button để lấy thông tin về ô bàn cờ được click
+            btn.BackgroundImage = listPlayers[curPlayer].Chess;
 
-            if (btn.BackgroundImage != null) { return; }
-
-            //banCo.Enabled = true;
-
-            btn.BackgroundImage = listPlayers[curPlayer].Chess; //Đặt hình ảnh quân cờ của người chơi hiện tại
-
-            DoiNguoiChoi();
-
+            // Kiểm tra thắng TRƯỚC — fix bug số 1
             if (IsEndGame(btn))
             {
                 isEndGame();
+                return; // không đổi lượt nữa
             }
+
+            DoiNguoiChoi();
         }
+
         private void isEndGame()
         {
-            if (endGame != null)
-            {
-                endGame(this, new EventArgs());
-            }
-            MessageBox.Show("Kết thúc game");
+            WinnerName = listPlayers[curPlayer].Name;
+            endGame?.Invoke(this, EventArgs.Empty);
         }
         private bool IsEndGame(Button btn)
         {
