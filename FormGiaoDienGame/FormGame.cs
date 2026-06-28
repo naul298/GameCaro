@@ -72,9 +72,15 @@ namespace FormGiaoDienGame
         private void BanCo_EndGame(object? sender, EventArgs e)
         {
             StopGame();
-            _socket.Send(new SocketData((int)SocketCommand.END, "", new Point()));
-        }
 
+            string winner = _banCo.WinnerName;
+            MessageBox.Show($"🏆 {winner} thắng!", "Kết thúc ván cờ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            lblStatus.Text = $"{winner} thắng!";
+
+            // Gửi END để đối thủ biết mình thua
+            _socket.Send(new SocketData((int)SocketCommand.END, winner, new Point()));
+        }
         private void StopGame()
         {
             tmCoolDown.Stop();
@@ -124,7 +130,9 @@ namespace FormGiaoDienGame
 
                 case (int)SocketCommand.END:
                     StopGame();
-                    MessageBox.Show("Đối thủ thắng!", "Kết thúc");
+                    string winner = data.Message;
+                    MessageBox.Show($"💀 Bạn thua! {winner} đã thắng ván này.", "Kết thúc ván cờ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lblStatus.Text = $"Thua! {winner} thắng.";
                     break;
 
                 case (int)SocketCommand.HET_GIO:
@@ -145,6 +153,11 @@ namespace FormGiaoDienGame
                 case (int)SocketCommand.THOAT_PHONG:
                     StopGame();
                     MessageBox.Show("Đối thủ đã thoát game.", "Thông báo");
+                    break;
+                case (int)SocketCommand.DAU_HANG:
+                    StopGame();
+                    MessageBox.Show("Đối thủ đã đầu hàng!\nBạn thắng!", "Chiến thắng", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lblStatus.Text = "Bạn thắng! Đối thủ đầu hàng.";
                     break;
             }
         }
