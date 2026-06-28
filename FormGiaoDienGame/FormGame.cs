@@ -12,7 +12,6 @@ namespace FormGiaoDienGame
         public FormGame(SocketManager socket, string displayName, int playerIndex, string opponentName, string roomName)
         {
             InitializeComponent();
-            Control.CheckForIllegalCrossThreadCalls = false;
 
             _socket = socket;
             _playerIndex = playerIndex;
@@ -56,6 +55,8 @@ namespace FormGiaoDienGame
         private void BatDauGame(int firstMover)
         {
             _gameOver = false;
+            btnSanSang.Enabled = true;
+            btnSanSang.Visible = true; 
             _banCo.VeBanCo(); // reset bàn cờ nếu chơi lại
             prcbCoolDown.Value = 0;
 

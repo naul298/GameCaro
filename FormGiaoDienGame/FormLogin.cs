@@ -56,7 +56,7 @@ namespace FormGiaoDienGame
                     catch { }
                 })).ToArray();
 
-                Task.WaitAll(tasks, 3000);
+                Task.WaitAll(tasks, 10000);
                 CapNhatUISauKhiQuet(found);
             });
         }
@@ -73,6 +73,7 @@ namespace FormGiaoDienGame
 
                     string serverIp = found[0];
                     cboServer.Text = serverIp;
+                    socket?.Close(); // đóng socket cũ trước
                     socket = new SocketManager { IP = serverIp };
                     socket.KetNoiServer();
 

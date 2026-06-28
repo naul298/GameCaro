@@ -56,7 +56,11 @@ namespace FormGiaoDienGame
             }
             return depth == 0 && s.Contains('{');
         }
-
+        public void Close()
+        {
+            try { _client?.Close(); } catch { }
+            _client = null;
+        }
         public object? Receive()
         {
             if (_client == null) return null;
