@@ -146,6 +146,11 @@ namespace FormGiaoDienGame
                     StopGame();
                     MessageBox.Show("Đối thủ đã thoát game.", "Thông báo");
                     break;
+                case (int)SocketCommand.DAU_HANG:
+                    StopGame();
+                    MessageBox.Show("Đối thủ đã đầu hàng!\n🏆 Bạn thắng!", "Chiến thắng", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lblStatus.Text = "Bạn thắng! Đối thủ đầu hàng.";
+                    break;
             }
         }
         private void FormGame_FormClosing(object sender, FormClosingEventArgs e)
