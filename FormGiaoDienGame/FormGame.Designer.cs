@@ -31,11 +31,11 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormGame));
             pnlBanCo = new Panel();
-            button1 = new Button();
+            btnChoiLai = new Button();
             btnDauHang = new Button();
-            button4 = new Button();
+            btnCauHoa = new Button();
             btnSanSang = new Button();
-            lblThoat = new Button();
+            btnThoatPhong = new Button();
             lblStatus = new Label();
             lblPlayer2 = new Label();
             lblPlayer1 = new Label();
@@ -61,21 +61,22 @@
             pnlBanCo.Size = new Size(816, 747);
             pnlBanCo.TabIndex = 0;
             // 
-            // button1
+            // btnChoiLai
             // 
-            button1.BackColor = Color.Lime;
-            button1.Cursor = Cursors.Hand;
-            button1.FlatStyle = FlatStyle.Popup;
-            button1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button1.ForeColor = Color.FromArgb(0, 0, 192);
-            button1.ImageAlign = ContentAlignment.MiddleLeft;
-            button1.Location = new Point(17, 152);
-            button1.Margin = new Padding(4, 5, 4, 5);
-            button1.Name = "button1";
-            button1.Size = new Size(171, 73);
-            button1.TabIndex = 1;
-            button1.Text = "Chơi lại";
-            button1.UseVisualStyleBackColor = false;
+            btnChoiLai.BackColor = Color.Lime;
+            btnChoiLai.Cursor = Cursors.Hand;
+            btnChoiLai.FlatStyle = FlatStyle.Popup;
+            btnChoiLai.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnChoiLai.ForeColor = Color.FromArgb(0, 0, 192);
+            btnChoiLai.ImageAlign = ContentAlignment.MiddleLeft;
+            btnChoiLai.Location = new Point(17, 152);
+            btnChoiLai.Margin = new Padding(4, 5, 4, 5);
+            btnChoiLai.Name = "btnChoiLai";
+            btnChoiLai.Size = new Size(171, 73);
+            btnChoiLai.TabIndex = 1;
+            btnChoiLai.Text = "Chơi lại";
+            btnChoiLai.UseVisualStyleBackColor = false;
+            btnChoiLai.Click += btnChoiLai_Click;
             // 
             // btnDauHang
             // 
@@ -94,21 +95,22 @@
             btnDauHang.UseVisualStyleBackColor = false;
             btnDauHang.Click += btnDauHang_Click;
             // 
-            // button4
+            // btnCauHoa
             // 
-            button4.BackColor = Color.Yellow;
-            button4.Cursor = Cursors.Hand;
-            button4.FlatStyle = FlatStyle.Popup;
-            button4.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            button4.ForeColor = Color.FromArgb(192, 0, 0);
-            button4.ImageAlign = ContentAlignment.MiddleLeft;
-            button4.Location = new Point(220, 152);
-            button4.Margin = new Padding(4, 5, 4, 5);
-            button4.Name = "button4";
-            button4.Size = new Size(171, 73);
-            button4.TabIndex = 4;
-            button4.Text = "Cầu hoà";
-            button4.UseVisualStyleBackColor = false;
+            btnCauHoa.BackColor = Color.Yellow;
+            btnCauHoa.Cursor = Cursors.Hand;
+            btnCauHoa.FlatStyle = FlatStyle.Popup;
+            btnCauHoa.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnCauHoa.ForeColor = Color.FromArgb(192, 0, 0);
+            btnCauHoa.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCauHoa.Location = new Point(220, 152);
+            btnCauHoa.Margin = new Padding(4, 5, 4, 5);
+            btnCauHoa.Name = "btnCauHoa";
+            btnCauHoa.Size = new Size(171, 73);
+            btnCauHoa.TabIndex = 4;
+            btnCauHoa.Text = "Cầu hoà";
+            btnCauHoa.UseVisualStyleBackColor = false;
+            btnCauHoa.Click += btnCauHoa_Click;
             // 
             // btnSanSang
             // 
@@ -126,21 +128,22 @@
             btnSanSang.UseVisualStyleBackColor = false;
             btnSanSang.Click += btnSanSang_Click;
             // 
-            // lblThoat
+            // btnThoatPhong
             // 
-            lblThoat.BackColor = Color.FromArgb(192, 0, 0);
-            lblThoat.Cursor = Cursors.Hand;
-            lblThoat.FlatStyle = FlatStyle.Popup;
-            lblThoat.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            lblThoat.ForeColor = Color.Yellow;
-            lblThoat.ImageAlign = ContentAlignment.MiddleLeft;
-            lblThoat.Location = new Point(626, 152);
-            lblThoat.Margin = new Padding(4, 5, 4, 5);
-            lblThoat.Name = "lblThoat";
-            lblThoat.Size = new Size(171, 73);
-            lblThoat.TabIndex = 7;
-            lblThoat.Text = "Thoát phòng";
-            lblThoat.UseVisualStyleBackColor = false;
+            btnThoatPhong.BackColor = Color.FromArgb(192, 0, 0);
+            btnThoatPhong.Cursor = Cursors.Hand;
+            btnThoatPhong.FlatStyle = FlatStyle.Popup;
+            btnThoatPhong.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            btnThoatPhong.ForeColor = Color.Yellow;
+            btnThoatPhong.ImageAlign = ContentAlignment.MiddleLeft;
+            btnThoatPhong.Location = new Point(626, 152);
+            btnThoatPhong.Margin = new Padding(4, 5, 4, 5);
+            btnThoatPhong.Name = "btnThoatPhong";
+            btnThoatPhong.Size = new Size(171, 73);
+            btnThoatPhong.TabIndex = 7;
+            btnThoatPhong.Text = "Thoát phòng";
+            btnThoatPhong.UseVisualStyleBackColor = false;
+            btnThoatPhong.Click += btnThoatPhong_Click;
             // 
             // lblStatus
             // 
@@ -280,12 +283,12 @@
             BackColor = SystemColors.GradientInactiveCaption;
             ClientSize = new Size(817, 1095);
             Controls.Add(btnSanSang);
-            Controls.Add(lblThoat);
+            Controls.Add(btnThoatPhong);
             Controls.Add(btnDauHang);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(pnlBanCo);
-            Controls.Add(button4);
-            Controls.Add(button1);
+            Controls.Add(btnCauHoa);
+            Controls.Add(btnChoiLai);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4, 5, 4, 5);
@@ -303,9 +306,9 @@
         #endregion
 
         private Panel pnlBanCo;
-        private Button button1;
+        private Button btnChoiLai;
         private Button btnDauHang;
-        private Button button4;
+        private Button btnCauHoa;
         private Label lblPlayer2;
         private Label lblPlayer1;
         private Label lblSoPhong;
@@ -313,7 +316,7 @@
         private Label lblTysoP1;
         private Label lblTysoP2;
         private TableLayoutPanel tableLayoutPanel1;
-        private Button lblThoat;
+        private Button btnThoatPhong;
         private ProgressBar prcbCoolDown;
         private System.Windows.Forms.Timer tmCoolDown;
         private Button btnSanSang;
