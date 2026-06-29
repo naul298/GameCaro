@@ -20,11 +20,24 @@ namespace FormGiaoDienGame
             lblUserName.Text = $"Xin chào: {displayName}";
             pnlTaoPhong.Visible = false;
             SetupGrid();
-            Listen();
+
+            // Đăng ký nhận gói từ SocketManager — chỉ 1 thread nhận duy nhất
+            _socket.OnDataReceived += OnSocketData;
             XinDanhSachPhong();
         }
-
-        // Cấu hình cột cho DataGridView
+        // ── Nhận gói từ SocketManager ────────────────────────────────────
+        // Chạy trên thread nhận của SocketManager → cần Invoke để cập nhật UI
+        private void OnSocketData(SocketData data)
+        {
+            if (this.IsDisposed || !this.IsHandleCreated) return;
+            this.Invoke(() => ProcessData(data));
+        }
+        // Hủy đăng ký — gọi trước khi chuyển sang FormGame hoặc đóng form
+        private void StopListen()
+        {
+            _socket.OnDataReceived -= OnSocketData;
+        }
+        // ── Cấu hình cột DataGridView ────────────────────────────────────
         private void SetupGrid()
         {
             dgvLobby.AutoGenerateColumns = false;
@@ -40,13 +53,13 @@ namespace FormGiaoDienGame
             dgvLobby.Columns.Add(new DataGridViewTextBoxColumn { Name = "colStatus", HeaderText = "Trạng thái", Width = 80 });
         }
 
-        // Gửi yêu cầu lấy danh sách phòng
+        // ── Gửi yêu cầu lấy danh sách phòng ─────────────────────────────
         private void XinDanhSachPhong()
         {
             _socket.Send(new SocketData((int)SocketCommand.GET_ROOMS, "", new Point()));
         }
 
-        //Hiển thị danh sách phòng lên grid
+        // ── Hiển thị danh sách phòng lên grid ───────────────────────────
         private void HienThiPhong(List<RoomInfo> rooms)
         {
             if (dgvLobby.InvokeRequired)
@@ -72,33 +85,8 @@ namespace FormGiaoDienGame
                     row.DefaultCellStyle.ForeColor = Color.Gray;
             }
         }
-        private void Listen()
-        {
-            var t = new Thread(() =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        var data = _socket.Receive() as SocketData;
-                        if (data == null)
-                        {
-                            break;
-                        }
-                        Console.WriteLine($"[DEBUG] Nhận lệnh: {(SocketCommand)data.Command}");
-                        this.Invoke(() => ProcessData(data));
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[DEBUG] Listen() lỗi: {ex.Message}");
-                        break;
-                    }
-                }
-            });
-            t.IsBackground = true;
-            t.Start();
-        }
 
+        // ── Xử lý gói tin nhận được ─────────────────────────────────────
         private void ProcessData(SocketData data)
         {
             switch ((SocketCommand)data.Command)
@@ -131,7 +119,6 @@ namespace FormGiaoDienGame
 
                 // ── Vào phòng ───────────────────────────────────────────
                 case SocketCommand.JOIN_OK:
-                    // Format: "tênPhòng|index|tênMình|tênĐốiThủ"
                     var parts = data.Message.Split('|');
                     string roomName = parts[0];
                     int playerIndex = int.Parse(parts[1]);
@@ -139,7 +126,8 @@ namespace FormGiaoDienGame
                     string opponentName = parts.Length > 3 ? parts[3] : "";
 
                     var formGame = new FormGame(_socket, myName, playerIndex, opponentName, roomName);
-                    formGame.Show();
+                    formGame.Show();      // Show TRƯỚC → IsHandleCreated = true
+                    StopListen();         // Hủy Lobby SAU → không còn khoảng trống chết
                     this.Hide();
                     break;
 
@@ -148,15 +136,14 @@ namespace FormGiaoDienGame
                     break;
             }
         }
-
+        // ── Button handlers ──────────────────────────────────────────────
         private void btnDangXuat_Click_1(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Đăng xuất?", "Thông báo",
-                MessageBoxButtons.OKCancel) != DialogResult.OK) return;
-
+            if (MessageBox.Show("Đăng xuất?", "Thông báo", MessageBoxButtons.OKCancel) != DialogResult.OK) return;
+            StopListen();
+            _socket.Close();
             this.Close();
         }
-
         private void btnTaoPhong_Click_1(object sender, EventArgs e)
         {
             txtTenPhong.Clear();
@@ -180,10 +167,7 @@ namespace FormGiaoDienGame
 
             int roomId = Convert.ToInt32(idValue);
 
-            _socket.Send(new SocketData(
-                (int)SocketCommand.JOIN_ROOM,
-                roomId.ToString(),
-                new Point()));
+            _socket.Send(new SocketData((int)SocketCommand.JOIN_ROOM, roomId.ToString(), new Point()));
         }
 
         private void btnLamMoi_Click(object sender, EventArgs e)
@@ -220,8 +204,25 @@ namespace FormGiaoDienGame
 
         private void FormLobby_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try { _socket.Send(new SocketData((int)SocketCommand.LEAVE_ROOM, "", new Point())); }
+            // Chỉ đóng socket khi form thực sự đóng (đăng xuất)
+            StopListen();
+            try
+            {
+                if (_socket.IsConnected)
+                    _socket.Send(new SocketData((int)SocketCommand.LEAVE_ROOM, "", new Point()));
+                _socket.Close();
+            }
             catch { }
+        }
+        private void FormLobby_VisibleChanged(object sender, EventArgs e)
+        {
+            if (!this.Visible) return;
+
+            // Đăng ký lại khi quay về lobby từ FormGame
+            _socket.OnDataReceived -= OnSocketData; // tránh đăng ký trùng
+            _socket.OnDataReceived += OnSocketData;
+
+            Task.Delay(200).ContinueWith(_ => this.Invoke(XinDanhSachPhong));
         }
     }
 }

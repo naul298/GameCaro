@@ -43,69 +43,72 @@
 
             Task.Run(() =>
             {
-                var regSocket = new SocketManager { IP = _serverIp };
-                bool connected = regSocket.KetNoiServer();
+                try
+                {
+                    // Tạo raw socket — kết nối, gửi, nhận rồi đóng luôn
+                    using var raw = new System.Net.Sockets.Socket(
+                        System.Net.Sockets.AddressFamily.InterNetwork,
+                        System.Net.Sockets.SocketType.Stream,
+                        System.Net.Sockets.ProtocolType.Tcp);
 
-                if (!connected)
+                    raw.Connect(_serverIp, 12345);
+
+                    string json = System.Text.Json.JsonSerializer.Serialize(
+                        new SocketData((int)SocketCommand.REGISTER,
+                                       $"{username}|{password}|{displayName}",
+                                       new Point(0, 0)));
+
+                    raw.Send(System.Text.Encoding.UTF8.GetBytes(json));
+
+                    // Nhận phản hồi
+                    byte[] buf = new byte[4096];
+                    int n = raw.Receive(buf);
+                    string responseJson = System.Text.Encoding.UTF8.GetString(buf, 0, n);
+                    var response = System.Text.Json.JsonSerializer.Deserialize<SocketData>(responseJson);
+
+                    this.Invoke(() =>
+                    {
+                        btnDangKi.Enabled = true;
+
+                        if (response == null)
+                        {
+                            lblStatus.ForeColor = Color.Red;
+                            lblStatus.Text = "✘ Không nhận được phản hồi từ server.";
+                            return;
+                        }
+
+                        if (response.Command == (int)SocketCommand.REGISTER_OK)
+                        {
+                            MessageBox.Show($"Đăng ký thành công!\n" +
+                                $"Tài khoản: {username}\n" +
+                                $"Tên hiển thị: {displayName}\n\n" +
+                                $"Bạn có thể đăng nhập ngay bây giờ.",
+                                "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            this.Close();
+                        }
+                        else if (response.Command == (int)SocketCommand.REGISTER_FAIL)
+                        {
+                            lblStatus.ForeColor = Color.Red;
+                            lblStatus.Text = response.Message.Contains("tồn tại", StringComparison.OrdinalIgnoreCase)
+                                ? "✘ Tên tài khoản đã tồn tại."
+                                : $"✘ {response.Message}";
+                        }
+                        else
+                        {
+                            lblStatus.ForeColor = Color.Red;
+                            lblStatus.Text = "✘ Phản hồi không hợp lệ từ server.";
+                        }
+                    });
+                }
+                catch (Exception ex)
                 {
                     this.Invoke(() =>
                     {
                         btnDangKi.Enabled = true;
                         lblStatus.ForeColor = Color.Red;
-                        lblStatus.Text = "✘ Không kết nối được server.";
+                        lblStatus.Text = $"✘ Lỗi: {ex.Message}";
                     });
-                    return;
                 }
-
-                // Gửi gói REGISTER — format: "username|password|displayName"
-                regSocket.Send(new SocketData(
-                    (int)SocketCommand.REGISTER,
-                    $"{username}|{password}|{displayName}",
-                    new Point(0, 0)));
-
-                var response = regSocket.Receive() as SocketData;
-
-                this.Invoke(() =>
-                {
-                    btnDangKi.Enabled = true;
-
-                    if (response == null)
-                    {
-                        lblStatus.ForeColor = Color.Red;
-                        lblStatus.Text = "✘ Không nhận được phản hồi từ server.";
-                        return;
-                    }
-
-                    if (response.Command == (int)SocketCommand.REGISTER_OK)
-                    {
-                        MessageBox.Show($"Đăng ký thành công!\n" +
-                            $"Tài khoản: {username}\n" +
-                            $"Tên hiển thị: {displayName}\n\n" +
-                            $"Bạn có thể đăng nhập ngay bây giờ.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        this.Close();
-                    }
-                    else if (response.Command == (int)SocketCommand.REGISTER_FAIL)
-                    {
-                        // Server báo tên tài khoản đã tồn tại hoặc lỗi khác
-                        if (response.Message.Contains("tồn tại", StringComparison.OrdinalIgnoreCase)
-                            || response.Message.Contains("exist", StringComparison.OrdinalIgnoreCase))
-                        {
-                            lblStatus.ForeColor = Color.Red;
-                            lblStatus.Text = "✘ Tên tài khoản đã tồn tại.";
-                        }
-                        else
-                        {
-                            lblStatus.ForeColor = Color.Red;
-                            lblStatus.Text = $"✘ {response.Message}";
-                        }
-                    }
-                    else
-                    {
-                        lblStatus.ForeColor = Color.Red;
-                        lblStatus.Text = "✘ Phản hồi không hợp lệ từ server.";
-                    }
-                });
             });
         }
 

@@ -5,8 +5,9 @@ namespace FormGiaoDienGame
         private QlyBanCo _banCo;
         private SocketManager _socket;
         private int _playerIndex;
-        private bool _isWaiting;
         private bool _gameOver = false;
+        private readonly Queue<SocketData> _pendingData = new();
+        private bool _handleReady = false;
 
 
         public FormGame(SocketManager socket, string displayName, int playerIndex, string opponentName, string roomName)
@@ -16,12 +17,13 @@ namespace FormGiaoDienGame
             _socket = socket;
             _playerIndex = playerIndex;
 
-            string nameX = (playerIndex == 0) ? displayName : opponentName;
-            string nameO = (playerIndex == 1) ? displayName : opponentName;
+            string nameX = (playerIndex == 0) ? displayName : (string.IsNullOrEmpty(opponentName) ? "Người chơi 1" : opponentName);
+            string nameO = (playerIndex == 1) ? displayName : (string.IsNullOrEmpty(opponentName) ? "Người chơi 2" : opponentName);
 
             _banCo = new QlyBanCo(pnlBanCo, lblPlayer1, lblPlayer2, lblStatus, nameX, nameO);
             _banCo.EndGame += BanCo_EndGame;
             _banCo.PlayerMark += BanCo_PlayerMark;
+            _socket.OnDataReceived += OnSocketData;
 
             lblSoPhong.Text = roomName;
             prcbCoolDown.Step = Cons.coolDownStep;
@@ -40,8 +42,22 @@ namespace FormGiaoDienGame
                 lblStatus.Text = "Đang chờ đối thủ vào phòng...";
             else
                 OnOpponentJoined(opponentName); // vào phòng đã có đủ 2 người
+        }
+        private void OnSocketData(SocketData data)
+        {
+            if (this.IsDisposed) return;
 
-            Listen();
+            if (!_handleReady)
+            {
+                lock (_pendingData) _pendingData.Enqueue(data); // queue lại thay vì drop
+                return;
+            }
+
+            this.Invoke(() => ProcessData(data));
+        }
+        private void StopListen()
+        {
+            _socket.OnDataReceived -= OnSocketData;
         }
         private void OnOpponentJoined(string opponentName)
         {
@@ -102,24 +118,6 @@ namespace FormGiaoDienGame
                 _socket.Send(new SocketData((int)SocketCommand.HET_GIO, "", new Point()));
             }
         }
-        private void Listen()
-        {
-            var t = new Thread(() =>
-            {
-                try
-                {
-                    while (true)
-                    {
-                        var data = _socket.Receive() as SocketData;
-                        if (data == null) break;
-                        this.Invoke(() => ProcessData(data));
-                    }
-                }
-                catch { }
-            });
-            t.IsBackground = true;
-            t.Start();
-        }
 
         private void ProcessData(SocketData data)
         {
@@ -143,47 +141,60 @@ namespace FormGiaoDienGame
 
                 case (int)SocketCommand.HET_GIO:
                     StopGame();
-                    MessageBox.Show("Đối thủ hết giờ — Bạn thắng!", "Kết thúc");
+                    lblStatus.Text = "Đối thủ hết giờ — Bạn thắng!";
+                    MessageBox.Show(
+                        "Đối thủ hết giờ suy nghĩ.\nBạn thắng ván này!",
+                        "Chiến thắng",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                     break;
 
                 case (int)SocketCommand.DAU_HANG:
                     StopGame();
-                    MessageBox.Show("Đối thủ đã đầu hàng! Bạn thắng!", "Chiến thắng", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    lblStatus.Text = "Bạn thắng! Đối thủ đầu hàng.";
+                    lblStatus.Text = "Đối thủ đầu hàng — Bạn thắng!";
+                    MessageBox.Show(
+                        "Đối thủ đã đầu hàng.\nBạn thắng ván này!",
+                        "Chiến thắng",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                     break;
 
                 // ── Thương lượng ────────────────────────────────────────
                 case (int)SocketCommand.CAU_HOA:
                     if (data.Message == "OK")
                     {
-                        // Đối thủ đồng ý → dừng game
                         StopGame();
-                        MessageBox.Show("Đối thủ đồng ý cầu hòa! 🤝 Ván cờ kết thúc hòa.", "Hòa", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         lblStatus.Text = "Ván cờ kết thúc hòa.";
-                        btnCauHoa.Enabled = true;
+                        // Không cần popup — lblStatus đã đủ, tránh spam box
+                        // Nếu muốn vẫn có thể giữ, nhưng bỏ btnCauHoa.Enabled = true vì game đã xong
                     }
                     else if (data.Message == "NO")
                     {
-                        // Đối thủ từ chối → tiếp tục chơi
-                        MessageBox.Show("Đối thủ từ chối cầu hòa!", "Bị từ chối", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        lblStatus.Text = "Đối thủ từ chối cầu hòa.";
-                        btnCauHoa.Enabled = true;
+                        btnCauHoa.Enabled = true; // mở lại để có thể xin lần khác
+                        lblStatus.Text = "Đối thủ từ chối cầu hòa. Tiếp tục chơi.";
+                        // Không cần popup — lblStatus đủ rõ, không làm gián đoạn game
                     }
                     else
                     {
-                        // Đối thủ xin hòa → hỏi mình
-                        var result = MessageBox.Show("Đối thủ xin cầu hòa! Bạn có đồng ý không?", "Cầu hòa", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        // Đối thủ xin hòa → hỏi mình, gộp thành 1 popup duy nhất
+                        var result = MessageBox.Show(
+                            "Đối thủ xin cầu hòa.\nBạn có đồng ý không?",
+                            "Cầu hòa",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button2); // mặc định "No"
+
                         if (result == DialogResult.Yes)
                         {
                             StopGame();
-                            _socket.Send(new SocketData((int)SocketCommand.CAU_HOA, "OK", new Point()));
-                            MessageBox.Show("Bạn đã đồng ý cầu hòa. 🤝 Ván cờ kết thúc hòa.", "Hòa", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             lblStatus.Text = "Ván cờ kết thúc hòa.";
+                            _socket.Send(new SocketData((int)SocketCommand.CAU_HOA, "OK", new Point()));
+                            // Không cần popup thứ 2 — lblStatus đủ
                         }
                         else
                         {
-                            _socket.Send(new SocketData((int)SocketCommand.CAU_HOA, "NO", new Point()));
                             lblStatus.Text = "Bạn từ chối cầu hòa.";
+                            _socket.Send(new SocketData((int)SocketCommand.CAU_HOA, "NO", new Point()));
                         }
                     }
                     break;
@@ -191,30 +202,36 @@ namespace FormGiaoDienGame
                 case (int)SocketCommand.CHOI_LAI:
                     if (data.Message == "OK")
                     {
-                        // Đối thủ đồng ý → chờ cả 2 bấm sẵn sàng
-                        btnChoiLai.Enabled = true;
+                        lblStatus.Text = "Đối thủ đồng ý chơi lại. Bấm Sẵn sàng!";
                         btnSanSang.Text = "Sẵn sàng";
                         btnSanSang.Visible = true;
                         btnSanSang.Enabled = true;
-                        lblStatus.Text = "Đối thủ đồng ý! Bấm Sẵn sàng để bắt đầu.";
+                        btnChoiLai.Enabled = true;
+                        // Không cần popup — lblStatus đã hướng dẫn action tiếp theo rõ ràng
                     }
                     else if (data.Message == "NO")
                     {
-                        MessageBox.Show("Đối thủ từ chối chơi lại!", "Bị từ chối", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        lblStatus.Text = "Đối thủ từ chối chơi lại.";
                         btnChoiLai.Enabled = true;
+                        lblStatus.Text = "Đối thủ từ chối chơi lại.";
+                        // Không cần popup
                     }
                     else
                     {
-                        // Đối thủ xin chơi lại → hỏi mình
-                        var result = MessageBox.Show("Đối thủ muốn chơi lại! Bạn có đồng ý không?", "Chơi lại", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        // Đối thủ xin chơi lại
+                        var result = MessageBox.Show(
+                            "Đối thủ muốn chơi lại.\nBạn có đồng ý không?",
+                            "Chơi lại",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button1);
+
                         if (result == DialogResult.Yes)
                         {
                             _socket.Send(new SocketData((int)SocketCommand.CHOI_LAI, "OK", new Point()));
+                            lblStatus.Text = "Bạn đồng ý chơi lại. Bấm Sẵn sàng!";
                             btnSanSang.Text = "Sẵn sàng";
                             btnSanSang.Visible = true;
                             btnSanSang.Enabled = true;
-                            lblStatus.Text = "Bạn đồng ý! Bấm Sẵn sàng để bắt đầu.";
                         }
                         else
                         {
@@ -231,7 +248,13 @@ namespace FormGiaoDienGame
                     string opponent = parts.Length > 3 ? parts[3] : "Đối thủ";
                     OnOpponentJoined(opponent);
                     break;
-
+                case (int)SocketCommand.JOIN_OK:
+                    // Host nhận lệnh này khi đối thủ vừa vào phòng → mở khóa btnSanSang
+                    var joinParts = data.Message.Split('|');
+                    string opponentJoined = joinParts.Length > 3 ? joinParts[3] : "";
+                    if (!string.IsNullOrEmpty(opponentJoined))
+                        OnOpponentJoined(opponentJoined);
+                    break;
                 case (int)SocketCommand.START_GAME:
                     // Message = "0" hoặc "1" — index người đi trước
                     int firstMover = int.Parse(data.Message);
@@ -239,10 +262,11 @@ namespace FormGiaoDienGame
                     _banCo.VeBanCo();
                     BatDauGame(firstMover);
                     break;
-
-                case (int)SocketCommand.THOAT_PHONG:
+                case (int)SocketCommand.LEAVE_ROOM:
+                    // Server báo đối thủ rời phòng — chỉ hiện 1 lần
                     StopGame();
-                    MessageBox.Show("Đối thủ đã thoát game.", "Thông báo");
+                    MessageBox.Show("Đối thủ đã thoát phòng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lblStatus.Text = "Đối thủ đã thoát phòng.";
                     break;
             }
         }
@@ -250,15 +274,17 @@ namespace FormGiaoDienGame
         {
             if (MessageBox.Show("Thoát khỏi trò chơi?", "Thông báo", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
             {
-                e.Cancel = true; // người dùng bấm Cancel → không thoát
+                e.Cancel = true;
                 return;
             }
 
-            // Báo server biết người chơi đã thoát phòng
-            try { _socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point())); }
+            try
+            {
+                _socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point())); // báo đối thủ
+                _socket.Send(new SocketData((int)SocketCommand.LEAVE_ROOM, "", new Point()));  // báo server rời phòng
+            }
             catch { }
 
-            // Tìm FormLobby đang bị ẩn và hiện lại
             var lobby = Application.OpenForms.OfType<FormLobby>().FirstOrDefault();
             if (lobby != null) lobby.Show();
         }
@@ -272,9 +298,13 @@ namespace FormGiaoDienGame
 
         private void btnDauHang_Click(object sender, EventArgs e)
         {
-            var confirm = MessageBox.Show("Bạn có chắc muốn đầu hàng không?\nĐối thủ sẽ thắng ván này.", "Xác nhận đầu hàng", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-            if (confirm != DialogResult.Yes) return;
+            if (MessageBox.Show(
+             "Bạn sẽ thua ván này nếu đầu hàng. Xác nhận?",
+             "Đầu hàng",
+             MessageBoxButtons.YesNo,
+             MessageBoxIcon.Warning,
+             MessageBoxDefaultButton.Button2) // mặc định focus vào "No" — tránh bấm nhầm
+         != DialogResult.Yes) return;
 
             StopGame();
             lblStatus.Text = "Bạn đã đầu hàng.";
@@ -283,12 +313,8 @@ namespace FormGiaoDienGame
 
         private void btnCauHoa_Click(object sender, EventArgs e)
         {
-            var confirm = MessageBox.Show("Bạn có chắc muốn xin cầu hòa không?", "Xác nhận cầu hòa", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (confirm != DialogResult.Yes) return;
-
-            btnCauHoa.Enabled = false; // chống bấm 2 lần
-            lblStatus.Text = "Đang chờ đối thủ trả lời...";
+            btnCauHoa.Enabled = false;
+            lblStatus.Text = "Đã gửi yêu cầu cầu hòa, chờ đối thủ...";
             _socket.Send(new SocketData((int)SocketCommand.CAU_HOA, "", new Point()));
         }
 
@@ -296,15 +322,15 @@ namespace FormGiaoDienGame
         {
             if (!_gameOver)
             {
-                MessageBox.Show("Chỉ có thể yêu cầu chơi lại sau khi ván cờ kết thúc!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    "Ván cờ chưa kết thúc.",
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
-
-            var confirm = MessageBox.Show("Bạn có chắc muốn xin chơi lại không?", "Xác nhận chơi lại", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirm != DialogResult.Yes) return;
-
             btnChoiLai.Enabled = false;
-            lblStatus.Text = "Đang chờ đối thủ trả lời...";
+            lblStatus.Text = "Đã gửi yêu cầu chơi lại, chờ đối thủ...";
             _socket.Send(new SocketData((int)SocketCommand.CHOI_LAI, "", new Point()));
         }
 
@@ -313,14 +339,30 @@ namespace FormGiaoDienGame
             var confirm = MessageBox.Show("Bạn có chắc muốn thoát phòng không?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirm != DialogResult.Yes) return;
 
-            try { _socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point())); }
+            StopListen(); // hủy đăng ký trước khi lobby nhận lại
+            try
+            {
+                _socket.Send(new SocketData((int)SocketCommand.THOAT_PHONG, "", new Point()));
+                _socket.Send(new SocketData((int)SocketCommand.LEAVE_ROOM, "", new Point()));
+            }
             catch { }
 
             var lobby = Application.OpenForms.OfType<FormLobby>().FirstOrDefault();
-            if (lobby != null) lobby.Show();
+            if (lobby != null) lobby.Show(); // VisibleChanged → lobby tự đăng ký lại
 
-            this.FormClosing -= FormGame_FormClosing; // tránh hỏi 2 lần khi Close()
+            this.FormClosing -= FormGame_FormClosing;
             this.Close();
+        }
+
+        private void FormGame_Load(object sender, EventArgs e)
+        {
+            _handleReady = true;
+            // Xử lý các gói đã bị queue trong lúc chờ handle
+            lock (_pendingData)
+            {
+                while (_pendingData.Count > 0)
+                    ProcessData(_pendingData.Dequeue());
+            }
         }
     }
 }

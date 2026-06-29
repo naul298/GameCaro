@@ -4,7 +4,6 @@ public enum SocketCommand
 {
     // ── Gameplay ────────────────────────────────
     SEND_POINT = 0,  // Gửi tọa độ nước đi
-    THONG_BAO = 1,  // [Chưa dùng] Thông báo chung
     CHOI_LAI = 2,  // Yêu cầu / phản hồi chơi lại (Message: "" | "OK" | "NO")
     CAU_HOA = 3,  // Yêu cầu / phản hồi cầu hòa (Message: "" | "OK" | "NO")
     DAU_HANG = 4,  // Người gửi đầu hàng, đối thủ thắng
@@ -13,9 +12,9 @@ public enum SocketCommand
     THOAT_PHONG = 7,  // Thoát khỏi phòng đang chơi
 
     // ── Đăng nhập ───────────────────────────────
-    LOGIN = 8,  // Client gửi tài khoản|mật khẩu
-    LOGIN_OK = 9,  // Server xác nhận đăng nhập, Message = displayName
-    LOGIN_FAIL = 10, // Server từ chối đăng nhập
+    LOGIN = 8,   // Client gửi tài khoản|mật khẩu
+    LOGIN_OK = 9,   // Server xác nhận đăng nhập, Message = displayName
+    LOGIN_FAIL = 10,  // Server từ chối đăng nhập
 
     // ── Lobby ───────────────────────────────────
     GET_ROOMS = 11, // Client xin danh sách phòng
@@ -34,7 +33,7 @@ public enum SocketCommand
     REGISTER_FAIL = 22, // Server báo đăng ký thất bại, Message = lý do
 
     // ── Phòng chờ ───────────────────────────────
-    OPPONENT_JOINED = 23, // [Chưa dùng] Đối thủ vào phòng (thay bằng JOIN_OK)
-    READY,                // Client báo sẵn sàng
-    START_GAME,           // Server báo bắt đầu, Message = index người đi trước
+    OPPONENT_JOINED = 23, // Server báo host: đối thủ đã vào phòng
+    READY,      // Client báo sẵn sàng
+    START_GAME, // Server báo bắt đầu, Message = index người đi trước
 }

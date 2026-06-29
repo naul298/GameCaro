@@ -11,7 +11,7 @@ public class GameServer
     private const int PORT = 12345;
     private const int DISCOVERY_PORT = 12346; // cổng phụ chỉ dùng để tìm server
 
-    private static readonly string CONN_STR = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={AppDomain.CurrentDomain.BaseDirectory}data\dataCaro.mdf;Integrated Security=True;";    // Danh sách tất cả client đang kết nối và tất cả phòng
+    private static readonly string CONN_STR = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\GameCaro\data\dataCaro.mdf;Integrated Security=True;";    // Danh sách tất cả client đang kết nối và tất cả phòng
     private readonly List<PlayerSession> _clients = new();
     private readonly List<LobbyRoom> _rooms = new();
     private readonly object _lock = new(); // Lock cho thread-safe
@@ -137,7 +137,7 @@ public class GameServer
             {
                 SocketData? data = NhanGoi(socket);
                 if (data == null) break;
-                XuLyLenh(session, data);
+                HandleCommand(session, data);
             }
         }
         catch { }
@@ -145,10 +145,11 @@ public class GameServer
     }
 
     // Xử lý từng lệnh client gửi lên
-    private void XuLyLenh(PlayerSession session, SocketData data)
+    private void HandleCommand(PlayerSession session, SocketData data)
     {
         switch ((SocketCommand)data.Command)
         {
+            // ── Lobby ───────────────────────────────────────────────
             case SocketCommand.GET_ROOMS:
                 GuiDanhSachPhong(session);
                 break;
@@ -164,13 +165,19 @@ public class GameServer
             case SocketCommand.LEAVE_ROOM:
                 RoiPhong(session);
                 break;
+
+            // ── Phòng chờ ───────────────────────────────────────────
             case SocketCommand.READY:
                 XuLyReady(session);
                 break;
+
+            // ── Gameplay — relay thẳng sang đối thủ ─────────────────
             case SocketCommand.SEND_POINT:
             case SocketCommand.END:
             case SocketCommand.HET_GIO:
             case SocketCommand.THOAT_PHONG:
+                RelayToOpponent(session, data);
+                break;
             case SocketCommand.CAU_HOA:
             case SocketCommand.CHOI_LAI:
             case SocketCommand.DAU_HANG:
@@ -254,53 +261,48 @@ public class GameServer
     {
         lock (_lock)
         {
-            // Tìm phòng theo ID trong danh sách phòng đang có
             var room = _rooms.FirstOrDefault(r => r.Id == roomId);
 
-            // Phòng không tồn tại → báo lỗi cho client
             if (room == null)
             {
                 GuiJson(session.Socket, SocketCommand.JOIN_FAIL, "Phòng không tồn tại.");
                 return;
             }
 
-            // Phòng đã đủ 2 người → không cho vào
             if (room.IsFull)
             {
                 GuiJson(session.Socket, SocketCommand.JOIN_FAIL, "Phòng đã đầy.");
                 return;
             }
 
-            // Thêm người chơi mới vào phòng
             room.Players.Add(session);
             session.CurrentRoomId = roomId;
-            session.Index = room.Players.Count - 1; // 0 = host, 1 = guest
+            session.Index = room.Players.Count - 1;
 
-            // Cập nhật DB: số người, trạng thái phòng
             DatabaseHelper.UpdateRoom(CONN_STR, roomId, room.HostId, room.PlayerCount, room.IsFull ? "Playing" : "Waiting");
 
             if (room.IsFull)
             {
-                // Đủ 2 người → gửi JOIN_OK cho CẢ HAI
-                // Format: "tênPhòng|playerIndex|tênMình|tênĐốiThủ"
-                var p0 = room.Players[0]; // host
-                var p1 = room.Players[1]; // guest
+                var p0 = room.Players[0];
+                var p1 = room.Players[1];
 
-                // Gửi cho host (p0): index=0, đối thủ là p1
-                GuiJson(p0.Socket, SocketCommand.JOIN_OK, $"{room.Name}|0|{p0.DisplayName}|{p1.DisplayName}");
+                // Guest (p1) nhận JOIN_OK → FormLobby chuyển sang FormGame
+                GuiJson(p1.Socket, SocketCommand.JOIN_OK,
+                    $"{room.Name}|1|{p1.DisplayName}|{p0.DisplayName}");
 
-                // Gửi cho guest (p1): index=1, đối thủ là p0
-                GuiJson(p1.Socket, SocketCommand.JOIN_OK, $"{room.Name}|1|{p1.DisplayName}|{p0.DisplayName}");
+                // Host (p0) đang ở FormGame → gửi OPPONENT_JOINED để mở btnSanSang
+                GuiJson(p0.Socket, SocketCommand.OPPONENT_JOINED,
+                    $"{room.Name}|0|{p0.DisplayName}|{p1.DisplayName}");
 
-                Console.WriteLine($"[Phòng] '{room.Name}': {p0.DisplayName} vs {p1.DisplayName} — bắt đầu!");
+                Console.WriteLine($"[Phòng] '{room.Name}': {p0.DisplayName} vs {p1.DisplayName} — đủ người!");
             }
             else
             {
-                // Chỉ 1 người (host vừa tạo phòng) → vào chờ với index=0
-                GuiJson(session.Socket, SocketCommand.JOIN_OK, $"{room.Name}|0|{session.DisplayName}|");
+                // Chỉ mình host trong phòng, chờ đối thủ
+                GuiJson(session.Socket, SocketCommand.JOIN_OK,
+                    $"{room.Name}|0|{session.DisplayName}|");
             }
 
-            // Broadcast cập nhật danh sách phòng cho tất cả người đang ở lobby
             BroadcastRoomUpdate(room);
         }
     }
@@ -312,34 +314,43 @@ public class GameServer
 
     private void XuLyRoiPhong(PlayerSession session)
     {
-        if (session.CurrentRoomId < 0) return;
+        if (session.CurrentRoomId < 0)
+        {
+            Console.WriteLine($"[RoiPhong] {session.DisplayName} không ở trong phòng nào.");
+            return;
+        }
 
         var room = _rooms.FirstOrDefault(r => r.Id == session.CurrentRoomId);
-        if (room == null) return;
+        if (room == null)
+        {
+            Console.WriteLine($"[RoiPhong] Không tìm thấy phòng {session.CurrentRoomId}.");
+            return;
+        }
+
+        Console.WriteLine($"[RoiPhong] {session.DisplayName} rời phòng '{room.Name}' — trước: {room.PlayerCount} người.");
 
         room.RemovePlayer(session);
         session.CurrentRoomId = -1;
 
+        Console.WriteLine($"[RoiPhong] Sau khi xóa: {room.PlayerCount} người. IsEmpty={room.IsEmpty} IsDefault={room.IsDefault}");
+
         if (room.IsEmpty && !room.IsDefault)
         {
-            // Xóa phòng tự tạo khi trống
             _rooms.Remove(room);
             DatabaseHelper.DeleteRoom(CONN_STR, room.Id);
             BroadcastToLobby(SocketCommand.ROOM_DELETED, room.Id.ToString());
-            Console.WriteLine($"[Phòng] '{room.Name}' đã bị xóa (trống).");
+            Console.WriteLine($"[RoiPhong] Phòng '{room.Name}' đã bị xóa.");
         }
         else
         {
-            // Còn người hoặc phòng mặc định → cập nhật
             int newHostId = room.Players.Count > 0 ? room.Players[0].UserId : room.HostId;
+            Console.WriteLine($"[RoiPhong] UpdateRoom id={room.Id} hostId={newHostId} playerCount={room.PlayerCount}");
             DatabaseHelper.UpdateRoom(CONN_STR, room.Id, newHostId, room.PlayerCount, "Waiting");
 
-            // Nếu còn người trong phòng, thông báo người đó thành host mới
             if (room.Players.Count > 0)
             {
                 room.Players[0].Index = 0;
-                GuiJson(room.Players[0].Socket, SocketCommand.THOAT_PHONG,
-                    "Đối thủ đã rời phòng. Bạn là host mới.");
+                GuiJson(room.Players[0].Socket, SocketCommand.LEAVE_ROOM, "Đối thủ đã rời phòng. Bạn đã thắng.");
             }
 
             BroadcastRoomUpdate(room);
@@ -398,6 +409,19 @@ public class GameServer
 
         string username = parts[0].Trim();
         string password = parts[1].Trim();
+
+        // Kiểm tra tài khoản đã đăng nhập chưa — chống login trùng
+        lock (_lock)
+        {
+            bool alreadyOnline = _clients.Any(c => c.DisplayName != null &&
+                DatabaseHelper.GetUserId(CONN_STR, username) == c.UserId);
+            if (alreadyOnline)
+            {
+                GuiJson(client, SocketCommand.LOGIN_FAIL, "Tài khoản đang được sử dụng ở nơi khác.");
+                client.Close(); return null;
+            }
+        }
+
         string? displayName = DatabaseHelper.KiemTraLogin(CONN_STR, username, password);
         if (displayName == null)
         {

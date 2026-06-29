@@ -127,39 +127,37 @@ namespace FormGiaoDienGame
             lblStatus.Text = "Đang đăng nhập...";
             btnDangNhap.Enabled = false;
 
-            // Gửi gói LOGIN
+            // Đăng ký nhận phản hồi qua event — nhất quán với toàn bộ project
+            socket.OnDataReceived += OnLoginResponse;
+
             var loginData = new SocketData((int)SocketCommand.LOGIN, $"{tenDangNhap}|{matKhau}", new Point(0, 0));
             socket.Send(loginData);
-            Task.Run(() =>
+        }
+        private void OnLoginResponse(SocketData response)
+        {
+            // Hủy đăng ký ngay để không nhận gói nào khác
+            socket.OnDataReceived -= OnLoginResponse;
+
+            if (this.IsDisposed || !this.IsHandleCreated) return;
+            this.Invoke(() =>
             {
-                var response = socket.Receive() as SocketData;
+                btnDangNhap.Enabled = true;
 
-                this.Invoke(() =>
+                if (response.Command == (int)SocketCommand.LOGIN_OK)
                 {
-                    btnDangNhap.Enabled = true;
+                    string displayName = response.Message;
+                    lblStatus.ForeColor = Color.Green;
+                    lblStatus.Text = "Xin chào " + displayName;
 
-                    if (response == null)
-                    {
-                        lblStatus.ForeColor = Color.Red;
-                        lblStatus.Text = "Lỗi phản hồi từ server.";
-                        return;
-                    }
-
-                    if (response.Command == (int)SocketCommand.LOGIN_OK)
-                    {
-                        string displayName = response.Message;
-
-                        lblStatus.ForeColor = Color.Green; lblStatus.Text = "Xin chao " + displayName;
-                        var formLobby = new FormLobby(socket, displayName);
-                        formLobby.Show();
-                        this.Hide();
-                    }
-                    else
-                    {
-                        lblStatus.ForeColor = Color.Red;
-                        lblStatus.Text = $"{response.Message}";
-                    }
-                });
+                    var formLobby = new FormLobby(socket, displayName);
+                    formLobby.Show();
+                    this.Hide();
+                }
+                else
+                {
+                    lblStatus.ForeColor = Color.Red;
+                    lblStatus.Text = response.Message;
+                }
             });
         }
     }

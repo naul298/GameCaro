@@ -169,19 +169,20 @@ namespace ServerGame.Data
             }
         }
 
-        /// <summary>
-        /// Cập nhật thông tin chủ phòng, số người và trạng thái phòng
-        /// </summary>
         public static void UpdateRoom(string connStr, int roomId, int hostId, int playerCount, string status)
         {
             try
             {
                 using var conn = new SqlConnection(connStr);
                 conn.Open();
-                // Khớp cột: host_id, player_count, status, id
-                using var cmd = new SqlCommand(
-                    "UPDATE Lobby SET host_id=@h, player_count=@p, status=@s WHERE id=@id", conn);
-                cmd.Parameters.AddWithValue("@h", hostId);
+
+                // hostId = 0 nghĩa là phòng trống, không update host_id để tránh FK violation
+                string sql = hostId > 0
+                    ? "UPDATE Lobby SET host_id=@h, player_count=@p, status=@s WHERE id=@id"
+                    : "UPDATE Lobby SET player_count=@p, status=@s WHERE id=@id";
+
+                using var cmd = new SqlCommand(sql, conn);
+                if (hostId > 0) cmd.Parameters.AddWithValue("@h", hostId);
                 cmd.Parameters.AddWithValue("@p", playerCount);
                 cmd.Parameters.AddWithValue("@s", status);
                 cmd.Parameters.AddWithValue("@id", roomId);
