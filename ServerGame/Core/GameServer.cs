@@ -93,6 +93,8 @@ public class GameServer
     // Load phòng từ DB vào memory khi khởi động
     private void LoadRoomsFromDb()
     {
+        DatabaseHelper.XoaPhongRac(CONN_STR); // dọn phòng rác trước khi load
+
         var rows = DatabaseHelper.LoadAllRooms(CONN_STR);
         foreach (var (id, name, isDefault) in rows)
             _rooms.Add(new LobbyRoom { Id = id, Name = name, IsDefault = isDefault });

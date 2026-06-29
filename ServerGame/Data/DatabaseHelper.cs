@@ -60,7 +60,25 @@ namespace ServerGame.Data
                 return null;
             }
         }
-
+        /// <summary>
+        /// Xóa toàn bộ phòng không mặc định và không có người chơi (player_count = 0)
+        /// </summary>
+        public static void XoaPhongRac(string connStr)
+        {
+            try
+            {
+                using var conn = new SqlConnection(connStr);
+                conn.Open();
+                using var cmd = new SqlCommand(
+                    "DELETE FROM Lobby WHERE is_default = 0 AND player_count = 0", conn);
+                int rows = cmd.ExecuteNonQuery();
+                Console.WriteLine($"Đã xóa {rows} phòng rác.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi DB XoaPhongRac: " + ex.Message);
+            }
+        }
         /// <summary>
         /// Lấy số ID của User dựa vào tên tài khoản (account)
         /// </summary>
