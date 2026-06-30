@@ -71,8 +71,11 @@ namespace FormGiaoDienGame
         private void BatDauGame(int firstMover)
         {
             _gameOver = false;
-            _banCo.VeBanCo(); // reset bàn cờ nếu chơi lại
+            _banCo.VeBanCo();
             prcbCoolDown.Value = 0;
+
+            btnDauHang.Enabled = true;
+            btnCauHoa.Enabled = true;
 
             bool myTurn = (_playerIndex == firstMover);
             pnlBanCo.Enabled = myTurn;
@@ -106,6 +109,9 @@ namespace FormGiaoDienGame
             pnlBanCo.Enabled = false;
             _gameOver = true;
             btnChoiLai.Enabled = true;
+
+            btnDauHang.Enabled = false;
+            btnCauHoa.Enabled = false;
         }
 
         private void tmCoolDown_Tick(object sender, EventArgs e)
@@ -298,6 +304,7 @@ namespace FormGiaoDienGame
 
         private void btnDauHang_Click(object sender, EventArgs e)
         {
+            if (_gameOver) return;
             if (MessageBox.Show(
              "Bạn sẽ thua ván này nếu đầu hàng. Xác nhận?",
              "Đầu hàng",
@@ -313,6 +320,7 @@ namespace FormGiaoDienGame
 
         private void btnCauHoa_Click(object sender, EventArgs e)
         {
+            if (_gameOver) return;
             btnCauHoa.Enabled = false;
             lblStatus.Text = "Đã gửi yêu cầu cầu hòa, chờ đối thủ...";
             _socket.Send(new SocketData((int)SocketCommand.CAU_HOA, "", new Point()));
