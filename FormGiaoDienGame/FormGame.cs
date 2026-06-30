@@ -37,6 +37,8 @@ namespace FormGiaoDienGame
             btnSanSang.Enabled = false;
             btnSanSang.Visible = true;
             btnChoiLai.Enabled = false;
+            btnDauHang.Enabled = false;
+            btnCauHoa.Enabled = false;
 
             if (string.IsNullOrEmpty(opponentName))
                 lblStatus.Text = "Đang chờ đối thủ vào phòng...";
